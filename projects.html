@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cibiyar Ƙirƙira ta BioTech</title>
+    <style>
+        /* Luxury Dark Theme CSS */
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #1a1a1a;
+            color: #e6e6e6;
+        }
+
+        .nav {
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            padding: 1rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav h1 {
+            margin: 0;
+            color: #fff;
+            font-size: 1.4em;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .lang-toggle {
+            background: #FFD700;
+            color: #2c3e50;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .container {
+            margin-top: 80px;
+            padding: 1rem;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .project-card {
+            background: #2d2d2d;
+            border-radius: 12px;
+            padding: 1rem;
+            transition: transform 0.3s;
+            cursor: pointer;
+            border: 1px solid #3498db;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            background: #363636;
+        }
+
+        .project-card h2 {
+            color: #3498db;
+            margin-top: 0;
+            font-size: 1.2em;
+        }
+
+        .project-card p {
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .detail-section {
+            display: none;
+            background: rgba(0,0,0,0.9);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #3498db;
+            font-size: 0.9em;
+        }
+
+        .close-btn {
+            float: right;
+            cursor: pointer;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .step {
+            margin: 10px 0;
+            padding: 8px;
+            background: #252525;
+            border-radius: 5px;
+        }
+
+        .step h3 {
+            font-size: 1em;
+            margin: 5px 0;
+        }
+
+        .step p {
+            margin: 5px 0;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .gold-text {
+            color: #FFD700;
+        }
+
+        .teal-text {
+            color: #20B2AA;
+        }
+
+        /* Responsive */
+        @media (min-width: 600px) {
+            .nav h1 {
+                font-size: 2em;
+            }
+            .lang-toggle {
+                font-size: 1em;
+            }
+            .project-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+            .project-card h2 {
+                font-size: 1.4em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <h1 class="lang-en">🔬 BioTech Hub</h1>
+        <h1 class="lang-ha" style="display: none;">🔬 Cibiyar BioTech</h1>
+        <button class="lang-toggle" onclick="toggleLanguage()">HAUSA</button>
+    </nav>
+
+    <div class="container">
+        <div class="project-grid">
+            <!-- Projects -->
+            <div class="project-card" onclick="toggleDetail('fish-eggs')">
+                <h2 class="lang-en">🐟 Fish Egg Hatching</h2>
+                <h2 class="lang-ha" style="display: none;">🐟 Ƙwai na Kifi</h2>
+                <p class="teal-text lang-en">Professional aquaculture techniques</p>
+                <p class="teal-text lang-ha" style="display: none;">Fasahohin kiwon kifaye</p>
+            </div>
+
+            <div class="project-card" onclick="toggleDetail('chicken-eggs')">
+                <h2 class="lang-en">🐔 Chicken Egg Incubation</h2>
+                <h2 class="lang-ha" style="display: none;">🐔 Ƙwai na Kaza</h2>
+                <p class="gold-text lang-en">Premium poultry solutions</p>
+                <p class="gold-text lang-ha" style="display: none;">Mafita na kiwon kaji</p>
+            </div>
+
+            <div class="project-card" onclick="toggleDetail('incubator')">
+                <h2 class="lang-en">⚙️ Smart Incubator Build</h2>
+                <h2 class="lang-ha" style="display: none;">⚙️ Gina Inkwaba</h2>
+                <p class="teal-text lang-en">Advanced incubation systems</p>
+                <p class="teal-text lang-ha" style="display: none;">Tsarin ƙyanƙyashe</p>
+            </div>
+
+            <!-- Placeholders -->
+            <div class="project-card">
+                <h2>🧪 Ovaprine Injection</h2>
+                <p class="gold-text">Content coming soon</p>
+            </div>
+
+            <div class="project-card">
+                <h2>💧 Hydro Power</h2>
+                <p class="teal-text">Content coming soon</p>
+            </div>
+
+            <div class="project-card">
+                <h2>🔋 Battery Tech</h2>
+                <p class="gold-text">Content coming soon</p>
+            </div>
+        </div>
+
+        <!-- Details -->
+        <div id="fish-eggs-en" class="detail-section lang-en">
+            <span class="close-btn" onclick="toggleDetail('fish-eggs-en')">×</span>
+            <h2>🐟 Fish Egg Hatching</h2>
+            <div class="step"><h3>1. Water</h3><p>pH 6.5-7.5 • 28°C • Methylene blue (1mg/L)</p></div>
+            <div class="step"><h3>2. Eggs</h3><p>Translucent only • 2-3 eggs/cm²</p></div>
+            <div class="step"><h3>3. Incubation</h3><p>Flow 0.5L/min • O₂ >6mg/L</p></div>
+        </div>
+
+        <div id="fish-eggs-ha" class="detail-section lang-ha" style="display: none;">
+            <span class="close-btn" onclick="toggleDetail('fish-eggs-ha')">×</span>
+            <h2>🐟 Ƙwai na Kifi</h2>
+            <div class="step"><h3>1. Ruwa</h3><p>pH 6.5-7.5 • 28°C • Methylene blue (1mg/L)</p></div>
+            <div class="step"><h3>2. Zaɓe</h3><p>Zaɓi masu haske • 2-3/cm²</p></div>
+            <div class="step"><h3>3. Hatching</h3><p>Kwararar ruwa • O₂ >6mg/L</p></div>
+        </div>
+
+        <div id="chicken-eggs-en" class="detail-section lang-en">
+            <span class="close-btn" onclick="toggleDetail('chicken-eggs-en')">×</span>
+            <h2>🐔 Chicken Egg Incubation</h2>
+            <div class="step"><h3>1. Storage</h3><p><48hrs • 13-18°C • 75% humidity</p></div>
+            <div class="step"><h3>2. Setup</h3><p>Day 1-18: 37.5°C • 60% humidity</p></div>
+            <div class="step"><h3>3. Hatching</h3><p>Day 19-21: 37.2°C • 70% humidity</p></div>
+        </div>
+
+        <div id="chicken-eggs-ha" class="detail-section lang-ha" style="display: none;">
+            <span class="close-btn" onclick="toggleDetail('chicken-eggs-ha')">×</span>
+            <h2>🐔 Ƙwai na Kaza</h2>
+            <div class="step"><h3>1. Ajiya</h3><p><48hrs • 13-18°C • Danshi 75%</p></div>
+            <div class="step"><h3>2. Tsari</h3><p>Kwanaki 1-18: 37.5°C • 60% danshi</p></div>
+            <div class="step"><h3>3. Hatching</h3><p>Kwanaki 19-21: 37.2°C • 70% danshi</p></div>
+        </div>
+
+        <div id="incubator-en" class="detail-section lang-en">
+            <span class="close-btn" onclick="toggleDetail('incubator-en')">×</span>
+            <h2>⚙️ Smart Incubator</h2>
+            <div class="step"><h3>Materials</h3><p>STM32 • 100W heater • Humidifier</p></div>
+            <div class="step"><h3>Steps</h3><p>Insulate • Install fan • Program PID</p></div>
+        </div>
+
+        <div id="incubator-ha" class="detail-section lang-ha" style="display: none;">
+            <span class="close-btn" onclick="toggleDetail('incubator-ha')">×</span>
+            <h2>⚙️ Inkwaba Mai Hikima</h2>
+            <div class="step"><h3>Kayan aiki</h3><p>STM32 • 100W hita • Humidifier</p></div>
+            <div class="step"><h3>Matakai</h3><p>Rufe akwati • Shigar fan • Shirya PID</p></div>
+        </div>
+    </div>
+
+    <script>
+        let currentLang = 'en';
+
+        function toggleLanguage() {
+            const en = document.querySelectorAll('.lang-en');
+            const ha = document.querySelectorAll('.lang-ha');
+            const toggle = document.querySelector('.lang-toggle');
+            
+            if(currentLang === 'en') {
+                en.forEach(el => el.style.display = 'none');
+                ha.forEach(el => el.style.display = 'block');
+                toggle.textContent = 'ENGLISH';
+                currentLang = 'ha';
+            } else {
+                ha.forEach(el => el.style.display = 'none');
+                en.forEach(el => el.style.display = 'block');
+                toggle.textContent = 'HAUSA';
+                currentLang = 'en';
+            }
+            
+            document.querySelectorAll('.detail-section').forEach(section => {
+                section.style.display = 'none';
+            });
+        }
+
+        function toggleDetail(projectBaseId) {
+            const projectId = `${projectBaseId}-${currentLang}`;
+            const detailSection = document.getElementById(projectId);
+            const allSections = document.querySelectorAll('.detail-section');
+            
+            allSections.forEach(section => {
+                if(section.id !== projectId) section.style.display = 'none';
+            });
+
+            detailSection.style.display = 
+                detailSection.style.display === 'block' ? 'none' : 'block';
+            
+            if(detailSection.style.display === 'block') {
+                detailSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    </script>
+</body>
+</html>

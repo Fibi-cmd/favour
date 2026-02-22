@@ -1,0 +1,180 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Haruna Ibrahim - Science Mentor</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: #0a192f;
+            font-family: 'Arial', sans-serif;
+            color: #64ffda;
+            perspective: 1000px;
+            overflow-x: hidden;
+        }
+
+        #backBtn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: #64ffda;
+            color: #0a192f;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            z-index: 1000;
+        }
+
+        #backBtn:hover {
+            transform: translateY(-3px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px;
+            text-align: center;
+        }
+
+        .header {
+            transform-style: preserve-3d;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        h1 {
+            font-size: 4em;
+            text-shadow: 3px 3px 0px #e6f1ff;
+            margin-bottom: 20px;
+        }
+
+        .science-icons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 50px 0;
+        }
+
+        .icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(100, 255, 218, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            animation: rotate 20s linear infinite;
+            transform-style: preserve-3d;
+        }
+
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .card {
+            background: rgba(100, 255, 218, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            transform-style: preserve-3d;
+            transition: all 0.5s;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: rotateY(20deg) rotateX(10deg) translateZ(30px);
+            background: rgba(100, 255, 218, 0.1);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateX(0) rotateY(0); }
+            50% { transform: translateY(-20px) rotateX(5deg) rotateY(5deg); }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg) translateZ(50px); }
+            to { transform: rotate(360deg) translateZ(50px); }
+        }
+
+        .hidden-message {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            opacity: 0;
+            transition: opacity 0.5s;
+            font-style: italic;
+        }
+
+        .card:hover + .hidden-message {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <button id="backBtn" onclick="window.location.href='learn.html'">← Back to Learning</button>
+
+    <div class="container">
+        <div class="header">
+            <h1>Haruna Ibrahim</h1>
+            <h3>Science Mentor & Future Nobel Laureate 🔬</h3>
+        </div>
+
+        <div class="science-icons">
+            <div class="icon">🌌</div>
+            <div class="icon">🧪</div>
+            <div class="icon">⚛️</div>
+            <div class="icon">🔭</div>
+        </div>
+
+        <div class="card-container">
+            <div class="card">
+                <h2>Quantum Physics</h2>
+                <p>Exploring the fundamental nature of reality</p>
+            </div>
+            <div class="card">
+                <h2>Organic Chemistry</h2>
+                <p>The art of molecular architecture</p>
+            </div>
+            <div class="card">
+                <h2>Astrophysics</h2>
+                <p>Mapping the cosmic landscape</p>
+            </div>
+        </div>
+
+        <div class="hidden-message" id="secretMessage">
+            "Science is not just a subject, it's a romance with the universe 🌟"
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.card');
+            const x = (window.innerWidth / 2 - e.pageX) / 25;
+            const y = (window.innerHeight / 2 - e.pageY) / 25;
+            
+            cards.forEach(card => {
+                card.style.transform = `rotateY(${x}deg) rotateX(${y}deg) translateZ(30px)`;
+            });
+        });
+
+        // Random color changes for fun
+        const colors = ['#64ffda', '#ff63fa', '#63ff9e', '#6395ff'];
+        setInterval(() => {
+            document.querySelector('h1').style.color = colors[Math.floor(Math.random() * colors.length)];
+        }, 3000);
+
+        // Secret message for crush
+        document.addEventListener('click', () => {
+            document.getElementById('secretMessage').style.opacity = '1';
+            setTimeout(() => {
+                document.getElementById('secretMessage').style.opacity = '0';
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

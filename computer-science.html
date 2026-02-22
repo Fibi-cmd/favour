@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Learning Hub - Wifi Troubleshooting</title>
+  <style>
+    /* Global Styles */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #74ABE2, #5563DE);
+      color: #333;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+    h1, h2, h3, h4 {
+      text-align: center;
+      color: #fff;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+    a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+    }
+    /* Animation Keyframes */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Main Menu Styles */
+    #main-menu {
+      max-width: 500px;
+      margin: 50px auto;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      animation: fadeIn 1.5s ease-in-out;
+    }
+    #main-menu ul {
+      list-style: none;
+      padding: 0;
+    }
+    #main-menu li {
+      background: rgba(255,255,255,0.3);
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 5px;
+      text-align: center;
+      transition: background 0.3s, transform 0.3s;
+    }
+    #main-menu li:hover {
+      background: rgba(255,255,255,0.5);
+      transform: scale(1.03);
+    }
+    /* Wifi Learning Section */
+    #wifi-learning {
+      max-width: 900px;
+      margin: 20px auto;
+      background: rgba(255, 255, 255, 0.98);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      color: #333;
+      display: none;
+      animation: fadeIn 1s ease-in-out;
+    }
+    #back-button, #take-test {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background: #5563DE;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #back-button:hover, #take-test:hover {
+      background: #4452bb;
+    }
+    #theory {
+      margin-bottom: 30px;
+      max-height: 500px;
+      overflow-y: auto;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 5px;
+      color: #333;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+    #theory h4 {
+      color: #5563DE;
+      margin-top: 20px;
+    }
+    #theory p {
+      margin: 15px 0;
+      text-align: justify;
+      line-height: 1.6;
+    }
+    /* Test Section */
+    #test {
+      display: none;
+      animation: fadeIn 1s ease-in-out;
+    }
+    #test .question {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background: pink; /* Changed to pink */
+      transition: background 0.3s;
+    }
+    #test .question:hover {
+      background: #ffb3c1; /* Lighter pink hover */
+    }
+    #test .question h4 {
+      margin-bottom: 10px;
+    }
+    #test .option {
+      display: block;
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #submit-test {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 30px;
+      background: #5563DE;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    #submit-test:hover {
+      background: #4452bb;
+    }
+    #score {
+      text-align: center;
+      margin-top: 20px;
+      animation: fadeIn 1s ease-in-out;
+    }
+    /* Added Take Test button color change */
+    #take-test {
+      background: green;
+    }
+  </style>
+</head>
+<body>
+  <!-- Main Menu -->
+  <div id="main-menu">
+    <h1>Welcome to the Learning Hub</h1>
+    <ul>
+      <li><a href="shurtcutkeys.html">Learn Shortcut Keys</a></li>
+      <li><a href="#" id="wifi-repair-link">Learn Wifi Repair manually or Code</a></li>
+      <li><a href="troubleshoot.html">Trouble Shoot any Computer</a></li>
+    </ul>
+  </div>
+
+  <!-- Wifi Learning Section -->
+  <div id="wifi-learning">
+    <button id="back-button">← Back to Menu</button>
+    <h2>Learn Wifi Repair Manually or Code</h2>
+    <div id="theory">
+      <h3>Theory: Detailed Wifi Troubleshooting Steps</h3>
+      <h4>Basic Troubleshooting:</h4>
+      <p><strong>1. Restart the Laptop:</strong> Sometimes, the simplest solution is the best. Restarting the laptop resets temporary settings and clears glitches that might be interrupting the network connection. It’s a quick step that often resolves minor issues without further intervention.</p>
+      <p><strong>2. Check Airplane Mode:</strong> Many devices have an Airplane Mode that disables all wireless communications. Ensure that this mode is turned off so your laptop can connect to WiFi networks. This step is especially important after traveling or when using a new device.</p>
+      <p><strong>3. Toggle WiFi On and Off:</strong> Instead of relying on the taskbar toggle, try switching the WiFi off and then on again through your system settings. This can reset the network adapter and re-establish a connection with the router.</p>
+      <h4>Network Adapter Check:</h4>
+      <p><strong>4. Enable WiFi Adapter:</strong> Press <strong>Win + R</strong>, type <code>ncpa.cpl</code>, and press Enter. In the Network Connections window, right-click on the WiFi adapter and select <em>Enable</em> if it’s disabled. This step ensures that the hardware is active and ready for a connection.</p>
+      <p><strong>5. Update WiFi Drivers:</strong> Outdated drivers can cause compatibility and connectivity issues. Press <strong>Win + X</strong> and select <em>Device Manager</em>. Expand <em>Network Adapters</em>, right-click on the WiFi adapter, and choose <em>Update Driver</em>. Select <em>Search automatically for drivers</em> to ensure you have the latest version.</p>
+      <p><strong>6. Reinstall the WiFi Adapter:</strong> If updating fails, try reinstalling the adapter. In Device Manager, right-click the WiFi adapter and choose <em>Uninstall device</em>. Restart the laptop so that the adapter reinstalls automatically. This refreshes the hardware settings and can resolve hidden conflicts.</p>
+      <h4>Advanced Fixes:</h4>
+      <p><strong>7. Run Network Troubleshooter:</strong> Windows includes a built-in Network Troubleshooter. Go to <em>Settings &gt; Network & Internet &gt; Status</em> and click on <em>Network Troubleshooter</em>. This tool scans for common issues and offers tailored solutions.</p>
+      <p><strong>8. Reset Network Settings:</strong> If problems persist, resetting network settings can help. Navigate to <em>Settings &gt; Network & Internet &gt; Status</em>, scroll down, and click <em>Network reset</em>. Note that this will remove saved networks and passwords, so have those handy.</p>
+      <p><strong>9. Check BIOS Settings:</strong> In rare cases, the WiFi adapter might be disabled from the BIOS. Restart your laptop, enter the BIOS (usually by pressing <strong>F2, F10,</strong> or <strong>DEL</strong> during startup), and check if the WiFi is enabled. Consult your laptop’s manual for specific instructions.</p>
+      <p>These steps cover both basic and advanced troubleshooting techniques. Follow each step carefully and note any changes. If the problem still isn’t solved, further details such as your laptop model and Windows version can help diagnose more specific issues.</p>
+    </div>
+    <button id="take-test">Take Test</button>
+
+    <!-- Test Section -->
+    <div id="test">
+      <h3>Test: Wifi Troubleshooting Knowledge</h3>
+      <form id="test-form">
+        <!-- Questions will be generated here -->
+      </form>
+      <button id="submit-test">Submit Test</button>
+      <div id="score" style="display: none;">
+        <h3>Your Score: <span id="score-value"></span>/9</h3>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Switch between main menu and wifi repair interface
+    const wifiRepairLink = document.getElementById('wifi-repair-link');
+    const mainMenu = document.getElementById('main-menu');
+    const wifiLearning = document.getElementById('wifi-learning');
+    const backButton = document.getElementById('back-button');
+    const takeTestButton = document.getElementById('take-test');
+    const testDiv = document.getElementById('test');
+
+    wifiRepairLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      mainMenu.style.display = 'none';
+      wifiLearning.style.display = 'block';
+    });
+
+    backButton.addEventListener('click', () => {
+      wifiLearning.style.display = 'none';
+      mainMenu.style.display = 'block';
+      // Reset test state if needed
+      testDiv.style.display = 'none';
+      document.getElementById('take-test').style.display = 'block';
+    });
+
+    // Define test questions generated from the theory steps
+    const questions = [
+      {
+        question: "Fibi, why is restarting the laptop an effective first step for WiFi troubleshooting?",
+        options: [
+          "It clears temporary glitches and resets system settings",
+          "It updates your software automatically",
+          "It increases the WiFi signal strength permanently",
+          "It disables the network adapter temporarily"
+        ],
+        answer: 0
+      },
+      {
+        question: "What must you check to ensure that your laptop is ready to connect to WiFi?",
+        options: [
+          "That Airplane Mode is turned off",
+          "That the desktop background is updated",
+          "That the screen brightness is at maximum",
+          "That the volume is not muted"
+        ],
+        answer: 0
+      },
+      {
+        question: "Which method is recommended to refresh the WiFi connection via settings?",
+        options: [
+          "Toggling WiFi off and then on from system settings",
+          "Changing the WiFi password",
+          "Reinstalling the operating system",
+          "Disabling Bluetooth"
+        ],
+        answer: 0
+      },
+      {
+        question: "How do you enable a disabled WiFi adapter?",
+        options: [
+          "Press Win + R, type <code>ncpa.cpl</code>, and enable it via right-click in the Network Connections window",
+          "Press Ctrl + Alt + Delete",
+          "Open Device Manager and update drivers",
+          "Run the Disk Cleanup tool"
+        ],
+        answer: 0
+      },
+      {
+        question: "Why is it important to update WiFi drivers?",
+        options: [
+          "They fix compatibility and connectivity issues",
+          "They change the router’s firmware",
+          "They boost the computer's processing speed",
+          "They modify the screen resolution"
+        ],
+        answer: 0
+      },
+      {
+        question: "What is the purpose of reinstalling the WiFi adapter?",
+        options: [
+          "It refreshes hardware settings and resolves hidden conflicts",
+          "It upgrades the hardware automatically",
+          "It disables unnecessary features",
+          "It improves the color settings on your display"
+        ],
+        answer: 0
+      },
+      {
+        question: "How does the Network Troubleshooter help in fixing WiFi issues?",
+        options: [
+          "It scans for common problems and provides tailored solutions",
+          "It automatically resets all settings without user input",
+          "It updates the operating system",
+          "It changes the IP address permanently"
+        ],
+        answer: 0
+      },
+      {
+        question: "What does resetting network settings do?",
+        options: [
+          "It removes saved networks and restores default settings",
+          "It increases WiFi range significantly",
+          "It deletes personal files",
+          "It disables the antivirus temporarily"
+        ],
+        answer: 0
+      },
+      {
+        question: "Why might you check the BIOS settings during advanced troubleshooting?",
+        options: [
+          "Because the WiFi adapter might be disabled at the firmware level",
+          "To update the desktop wallpaper",
+          "To modify the boot order",
+          "To adjust the screen brightness"
+        ],
+        answer: 0
+      }
+    ];
+
+    // Render test questions into the form dynamically
+    function renderTest() {
+      const form = document.getElementById('test-form');
+      form.innerHTML = ''; // Clear previous content
+
+      questions.forEach((q, index) => {
+        // Create a container for each question
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'question';
+        // Create and append the question text
+        const qTitle = document.createElement('h4');
+        qTitle.textContent = (index + 1) + ". " + q.question;
+        questionDiv.appendChild(qTitle);
+
+        // Create radio options for each answer
+        q.options.forEach((option, opIndex) => {
+          const label = document.createElement('label');
+          label.className = 'option';
+          label.style.cursor = 'pointer';
+          const radio = document.createElement('input');
+          radio.type = 'radio';
+          radio.name = 'q' + index;
+          radio.value = opIndex;
+          // When one option is selected, disable all for that question
+          radio.addEventListener('change', function() {
+            const radios = document.getElementsByName('q' + index);
+            radios.forEach(r => r.disabled = true);
+          });
+          label.appendChild(radio);
+          label.appendChild(document.createTextNode(" " + option));
+          questionDiv.appendChild(label);
+        });
+        form.appendChild(questionDiv);
+      });
+    }
+
+    // Show the test when "Take Test" is clicked
+    takeTestButton.addEventListener('click', () => {
+      document.getElementById('theory').style.display = 'none';
+      takeTestButton.style.display = 'none';
+      testDiv.style.display = 'block';
+      renderTest();
+    });
+
+    // Handle test submission
+    document.getElementById('submit-test').addEventListener('click', function() {
+      let score = 0;
+      questions.forEach((q, index) => {
+        const radios = document.getElementsByName('q' + index);
+        let selected = null;
+        radios.forEach((radio) => {
+          if (radio.checked) {
+            selected = parseInt(radio.value);
+          }
+        });
+        // Locate the question container
+        const questionDiv = radios[0].closest('.question');
+        // Highlight options: correct answers in green and incorrect selections in red
+        const labels = questionDiv.querySelectorAll('label');
+        labels.forEach((label, labIndex) => {
+          label.style.backgroundColor = '';
+          if (labIndex === q.answer) {
+            label.style.backgroundColor = 'lightgreen';
+          }
+          if (selected !== null && selected === labIndex && labIndex !== q.answer) {
+            label.style.backgroundColor = 'tomato';
+          }
+        });
+        if (selected === q.answer) score++;
+      });
+      // Display the final score.
+      document.getElementById('score-value').textContent = score;
+      document.getElementById('score').style.display = 'block';
+      // Prevent re-submission.
+      document.getElementById('submit-test').disabled = true;
+    });
+  </script>
+</body>
+</html>

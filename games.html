@@ -1,0 +1,210 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arcadia Gaming Hub</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      overflow-x: hidden;
+      background: #000;
+    }
+
+    #bg-video {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      z-index: -1;
+      object-fit: cover;
+      background: #000;
+    }
+
+    /* Navigation Buttons */
+    .nav-button {
+      position: fixed;
+      text-decoration: none;
+      color: white;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px 18px;
+      border-radius: 25px;
+      font-size: 14px;
+      z-index: 100;
+      transition: all 0.3s ease;
+      border: 2px solid #fff;
+      text-align: center;
+    }
+
+    .nav-button:hover {
+      transform: scale(1.1);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    #back-btn {
+      top: 15px;
+      left: 10px;
+    }
+
+    #other-games-btn {
+      top: 15px;
+      right: 10px;
+    }
+
+    #play-btn {
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* Game Grid */
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      grid-gap: 20px;
+      padding: 80px 15px 100px 15px;
+    }
+
+    .game-card {
+      position: relative;
+      width: 100%;
+      padding-bottom: 75%;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .game-card-inner {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.3s;
+      transform-style: preserve-3d;
+    }
+
+    /* Touch-friendly hover for mobile */
+    @media (hover: none) {
+      .game-card:hover .game-card-inner {
+        transform: none !important;
+      }
+    }
+
+    .game-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+      backface-visibility: hidden;
+    }
+
+    .game-card .label {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 5px;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    /* Smaller devices adjustments */
+    @media (max-width: 480px) {
+      .nav-button {
+        font-size: 12px;
+        padding: 8px 14px;
+      }
+
+      .game-grid {
+        grid-gap: 15px;
+        padding: 70px 10px 90px 10px;
+      }
+
+      .game-card .label {
+        font-size: 11px;
+        padding: 3px 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <video autoplay muted loop id="bg-video" playsinline>
+    <source src="https://drive.google.com/uc?id=1JokvbXIVagGVhG9aSA4GnPuT1sOcgxXG&export=download" type="video/mp4">
+    Your browser does not support HTML5 video.
+  </video>
+
+  <!-- Top Navigation Buttons -->
+  <a id="back-btn" class="nav-button" href="cal.html">&larr; Back</a>
+  <a id="other-games-btn" class="nav-button" href="https://games.com" target="_blank">Other Games</a>
+
+  <!-- Game Grid -->
+  <div class="game-grid" id="gameGrid"></div>
+
+  <!-- Bottom Play Button -->
+  <a id="play-btn" class="nav-button" href="https://games.com" target="_blank">Play Now</a>
+
+  <script>
+    const games = [
+      {file: 'biblequiz.html', thumb: 'game1.jpg', name: 'Divine Mystery'},
+      {file: 'flight.html', thumb: 'game2.jpg', name: 'Skyward Odyssey'},
+      {file: 'favour.html', thumb: 'game3.jpg', name: 'favour’s Chronicle'},
+      {file: 'runner.html', thumb: 'game4.jpg', name: 'Endless Quest'},
+      {file: 'helicopter.html', thumb: 'game5.jpg', name: 'Chopper Rescue'},
+      {file: 'snake.html', thumb: 'game6.jpg', name: 'Serpent Strike'},
+      {file: 'defence.html', thumb: 'game7.jpg', name: 'Cosmic Guard'},
+      {file: 'slice.html', thumb: 'game8.jpg', name: 'Fruit Frenzy'}
+    ];
+
+    const grid = document.getElementById('gameGrid');
+
+    games.forEach(game => {
+      const card = document.createElement('div');
+      card.className = 'game-card';
+      card.onclick = () => window.location.href = game.file;
+
+      const inner = document.createElement('div');
+      inner.className = 'game-card-inner';
+
+      const img = document.createElement('img');
+      img.src = game.thumb;
+      img.alt = game.name;
+
+      const label = document.createElement('div');
+      label.className = 'label';
+      label.textContent = game.name;
+
+      inner.appendChild(img);
+      inner.appendChild(label);
+      card.appendChild(inner);
+      grid.appendChild(card);
+    });
+
+    document.querySelectorAll('.game-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const midX = rect.width / 2;
+        const midY = rect.height / 2;
+        const rotateY = (x - midX) / midX * 10;
+        const rotateX = - (y - midY) / midY * 10;
+
+        const inner = card.querySelector('.game-card-inner');
+        inner.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg) scale(1.05)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        const inner = card.querySelector('.game-card-inner');
+        inner.style.transform = '';
+      });
+    });
+  </script>
+</body>
+</html>

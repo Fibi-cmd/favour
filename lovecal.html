@@ -1,0 +1,255 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Love Computer Analysis</title>
+  <style>
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: #222;
+      border: 1px solid #0f0;
+      color: #0f0;
+      padding: 10px 20px;
+      text-decoration: none;
+    }
+
+    .back-button:hover {
+      background: #0f0;
+      color: #000;
+    }
+
+    .analog-meter {
+      width: 200px;
+      height: 200px;
+      border: 3px solid #0f0;
+      border-radius: 50%;
+      margin: 20px auto;
+      position: relative;
+    }
+
+    .needle {
+      width: 2px;
+      height: 90px;
+      background: #0f0;
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom;
+      transform: rotate(-90deg);
+      transition: all 2s ease-in-out;
+    }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background: #000;
+      color: #0f0;
+      padding: 20px;
+      max-width: 400px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .container {
+      border: 2px solid #0f0;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    input {
+      background: #111;
+      border: 1px solid #0f0;
+      color: #0f0;
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+    }
+
+    button {
+      background: #222;
+      border: 1px solid #0f0;
+      color: #0f0;
+      padding: 10px 20px;
+      margin: 10px 0;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0f0;
+      color: #000;
+    }
+
+    .analysis-result {
+      border-top: 1px dashed #0f0;
+      margin-top: 20px;
+      padding-top: 10px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background: #111;
+      margin: 10px 0;
+    }
+
+    .progress {
+      width: 0%;
+      height: 100%;
+      background: #0f0;
+      transition: width 2s;
+    }
+
+    .error {
+      color: #f00;
+    }
+
+    .special-message {
+      animation: glow 1s infinite alternate;
+      color: #0f0;
+    }
+
+    .warning-message {
+      color: #f00;
+      animation: glow-red 1s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 5px #0f0; }
+      to { text-shadow: 0 0 20px #0f0; }
+    }
+
+    @keyframes glow-red {
+      from { text-shadow: 0 0 5px red; }
+      to { text-shadow: 0 0 20px red; }
+    }
+  </style>
+</head>
+<body>
+  <a href="cal.html" class="back-button">« BACK</a>
+
+  <div class="container">
+    <h1>LOVE COMPATIBILITY ANALYZER 1.0</h1>
+
+    <input type="text" id="name1" placeholder="YOUR NAME">
+    <input type="text" id="name2" placeholder="PARTNER'S NAME">
+
+    <button onclick="startAnalysis()">INITIATE ANALYSIS</button>
+
+    <div class="analysis-result" id="result">
+      <div class="analog-meter">
+        <div class="needle" id="needle"></div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+      </div>
+      <div id="output"></div>
+    </div>
+  </div>
+
+  <audio id="sound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+
+  <script>
+    // Array of funny/cute random love results
+    const funnyLoveResults = [
+      "💘 Your love score is 101% – System overloaded with sweetness!",
+      "❤️ Love detected: Infinity ♾️",
+      "💕 You + Me = Perfect Equation",
+      "😂 Warning: Too much cuteness to calculate!",
+      "🌌 Love Level: Out of this Galaxy!",
+      "😘 Result: You own my calculator and my heart",
+      "💓 Equation Solved: We = Forever",
+      "😊 Your smile just divided my worries to zero",
+      "🔥 Passion Index: Off the charts!",
+      "💔 Error 404 – Can’t find anyone else but you!"
+    ];
+
+    function startAnalysis() {
+      const name1 = document.getElementById('name1').value.trim().toLowerCase();
+      const name2 = document.getElementById('name2').value.trim().toLowerCase();
+      const progressBar = document.getElementById('progress');
+      const output = document.getElementById('output');
+      const sound = document.getElementById('sound');
+      const needle = document.getElementById('needle');
+
+      if (!name1 || !name2) {
+        alert('Please enter both names');
+        return;
+      }
+
+      const pairKey = [name1, name2].sort().join('|');
+      const currentTime = Date.now();
+      const lastAttempt = localStorage.getItem(pairKey);
+
+      if (lastAttempt) {
+        const timeDiff = currentTime - parseInt(lastAttempt);
+        if (timeDiff < 30000) {
+          const remaining = Math.ceil((30000 - timeDiff) / 1000);
+          progressBar.style.width = '0%';
+          output.innerHTML = `<div class="error">Please wait ${remaining} seconds to analyze again</div>`;
+          sound.play();
+          return;
+        }
+      }
+
+      localStorage.setItem(pairKey, currentTime.toString());
+      sound.play();
+      progressBar.style.width = '0%';
+      output.innerHTML = '';
+
+      setTimeout(() => {
+        progressBar.style.width = '100%';
+
+        setTimeout(() => {
+          const isHarunafavourPair =
+            (name1 === 'haruna' && name2 === 'favour') ||
+            (name1 === 'favour' && name2 === 'haruna');
+
+          const isfavourInvolved = name1 === 'favour' || name2 === 'favour';
+          const isWithSomeoneElse = isfavourInvolved && !(name1 === 'haruna' || name2 === 'haruna');
+
+          let compatibility = isHarunafavourPair ? 100 : Math.floor(Math.random() * 41) + 60;
+          let rotation = (compatibility * 1.8) - 90;
+          needle.style.transform = `rotate(${rotation}deg)`;
+
+          // Pick random funny love result
+          const funnyMessage = funnyLoveResults[Math.floor(Math.random() * funnyLoveResults.length)];
+
+          let resultHTML = `
+            <h3>ANALYSIS COMPLETE</h3>
+            <p>COMPATIBILITY MATRIX: ${compatibility}%</p>
+            <p>EMOTIONAL SYNC: ${Math.floor(Math.random() * 41) + 60}%</p>
+            <p>LONG-TERM POTENTIAL: ${Math.floor(Math.random() * 41) + 60}%</p>
+            <p>STATUS: ${compatibility > 75 ? 'OPTIMAL MATCH' : 'REQUIRES FURTHER ANALYSIS'}</p>
+            <div class="special-message"><p>${funnyMessage}</p></div>
+          `;
+
+          if (isHarunafavourPair) {
+            resultHTML += `
+              <div class="special-message">
+                <h3>favour, congratulations!</h3>
+                <p>Your love score is 101% 💖 Overloaded with sweetness!
+    <br Love detected: Infinity ❤️♾️</br>
+    "You + Me = Perfect Equation 💕😊</p>
+              </div>
+            `;
+          } else if (isWithSomeoneElse) {
+            resultHTML += `
+              <div class="warning-message">
+                <h3>EXTREMELY POOR</h3>
+                <p>Sorry favour, there is a problem between you or your partner. The love is fake somewhere 💔</p>
+              </div>
+            `;
+            compatibility = 20; // Force low reading
+            rotation = (compatibility * 1.8) - 90;
+            needle.style.transform = `rotate(${rotation}deg)`;
+          }
+
+          output.innerHTML = resultHTML;
+        }, 2000);
+      }, 100);
+    }
+  </script>
+</body>
+</html>

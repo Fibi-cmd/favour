@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<title>Divine Mystery — 3D Love Quiz (Professor Edition)</title>
+<meta name="description" content="A long-form 3D love quiz game — multi-level, mini-games, timed questions, lifelines, and progressive scoring."/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+/* =========================================================================
+   Divine Mystery — 3D Love Quiz (Optimized, Mobile-First)
+   - Lighter paints, tighter layout, larger tap targets for mobile
+   - Reduced layout thrash, GPU-friendly transitions
+   - Accessible roles/labels
+   ========================================================================= */
+
+:root{
+  --bg:#0b1020;
+  --card:#0f1724;
+  --accent:#ff6fa3;
+  --accent-2:#00d4ff;
+  --muted:#98a0b3;
+  --glass: rgba(255,255,255,0.03);
+  --glass-2: rgba(255,255,255,0.04);
+  --success:#34d399;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(255,111,167,0.07), transparent),
+              radial-gradient(1000px 500px at 90% 90%, rgba(0,212,255,0.03), transparent),
+              var(--bg);
+  color:#e6eef8;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden; /* allow vertical scroll on mobile */
+}
+
+/* Particle canvas fills background */
+#bg-canvas{ position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+
+/* App shell */
+.app { position:relative; z-index:2; min-height:100svh; display:flex; flex-direction:column; align-items:center; padding:16px; gap:14px; }
+
+/* Header / Title */
+.header { width:100%; max-width:1100px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.title { display:flex; gap:10px; align-items:center; }
+.logo { width:52px; height:52px; border-radius:12px; background: linear-gradient(135deg,var(--accent),var(--accent-2)); box-shadow:0 6px 30px rgba(0,0,0,0.6), 0 2px 10px rgba(255,111,163,0.08) inset; display:flex; align-items:center; justify-content:center; font-weight:700; font-family: "Great Vibes", cursive; font-size:24px; color:#081021; }
+.h1 { font-size:1.15rem; font-weight:800; letter-spacing:0.3px; }
+.sub { font-size:0.9rem; color:var(--muted) }
+
+/* Main board */
+.board { width:100%; max-width:1100px; display:grid; grid-template-columns: 1fr; gap:14px; align-items:start; }
+
+/* Left panel */
+.left { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:14px; padding:12px; border:1px solid rgba(255,255,255,0.03); box-shadow: 0 8px 40px rgba(0,0,0,0.5); }
+.profile { display:flex; gap:12px; align-items:center; }
+.avatar { width:64px; height:64px; border-radius:12px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); display:flex; align-items:center; justify-content:center; font-weight:900; color:#081021; font-size:18px; }
+.info h3 {margin:0; font-size:1rem}
+.info p {margin:4px 0 0; color:var(--muted); font-size:0.9rem}
+
+.progress-wrap { margin-top:10px; display:flex; gap:10px; align-items:center; }
+.ring { width:64px; height:64px; border-radius:50%; background:conic-gradient(var(--accent) var(--progress,40%), rgba(255,255,255,0.06) 0); display:flex; align-items:center; justify-content:center; font-weight:800 }
+.scorebox { flex:1; color:var(--muted) }
+.stat { font-size:0.95rem; color:#dff; font-weight:800 }
+
+.lifelines { margin-top:12px }
+.lifline-list { display:flex; gap:10px; flex-wrap:wrap }
+.lifeline { background:var(--glass); padding:10px 12px; border-radius:12px; font-size:14px; cursor:pointer; color:#eaf2ff; border:1px solid rgba(255,255,255,0.05); display:flex; gap:8px; align-items:center; touch-action:manipulation }
+.lifeline:active{ transform:translateY(1px) }
+.lifeline.disabled { opacity:0.35; pointer-events:none }
+
+.levels { margin-top:14px; display:flex; gap:8px; flex-direction:column }
+.level { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid rgba(255,255,255,0.03); }
+.level small { color:var(--muted) }
+
+/* Right panel */
+.right { background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01)); padding:14px; border-radius:14px; min-height:420px; border:1px solid rgba(255,255,255,0.03); box-shadow: 0 12px 40px rgba(0,0,0,0.5); position:relative; overflow:hidden; }
+
+.stage { display:flex; flex-direction:column; gap:12px; }
+.card-3d { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:14px; border-radius:12px; transform-style:preserve-3d; perspective:900px; border:1px solid rgba(255,255,255,0.03); }
+.card-inner { transition: transform 500ms cubic-bezier(.17,.67,.14,1.02); transform-style: preserve-3d; transform-origin:center; will-change:transform; display:block; }
+.front { backface-visibility:hidden; transform:translateZ(0); }
+.card-title { font-size:1.05rem; margin-bottom:6px; font-weight:800 }
+.card-desc { color:var(--muted); margin-bottom:10px }
+
+.question { font-size:1.05rem; margin-bottom:8px; line-height:1.45; }
+.answers { display:flex; flex-direction:column; gap:10px }
+.answer { background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.03)); padding:14px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.05); cursor:pointer; font-weight:700; color:#eaf6ff; transition: transform .12s ease, box-shadow .12s ease, background .12s; outline:none; }
+.answer:focus-visible { box-shadow:0 0 0 3px rgba(255,111,163,0.35) }
+.answer:hover { transform:translateY(-2px); box-shadow:0 10px 24px rgba(0,0,0,0.45) }
+.answer.correct { background: linear-gradient(90deg, rgba(52,211,153,0.16), rgba(52,211,153,0.08)); border-color:rgba(52,211,153,0.3) }
+.answer.wrong { background: linear-gradient(90deg, rgba(255,111,163,0.08), rgba(255,111,163,0.04)); border-color: rgba(255,111,163,0.3) }
+
+.controls { display:flex; gap:8px; margin-top:10px; align-items:center; flex-wrap:wrap }
+.btn { padding:12px 14px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#081021; border:none; border-radius:12px; cursor:pointer; font-weight:900; box-shadow: 0 8px 20px rgba(0,0,0,0.45); touch-action:manipulation }
+.btn.secondary { background:transparent; color:#e6eef8; border:1px solid rgba(255,255,255,0.08) }
+.btn:active{ transform:translateY(1px) }
+
+.timer { display:flex; align-items:center; gap:12px; margin-top:8px; }
+.timebar { height:12px; background: rgba(255,255,255,0.06); border-radius:20px; width:100%; overflow:hidden; border:1px solid rgba(255,255,255,0.06) }
+.timefill { height:100%; width:0%; background: linear-gradient(90deg,var(--accent),var(--accent-2)); transition: width 0.25s linear; }
+
+/* mini-game overlay */
+.overlay { position:absolute; inset:0; z-index:5; display:none; align-items:center; justify-content:center; background: linear-gradient(180deg, rgba(2,6,23,0.78), rgba(2,6,23,0.7)); backdrop-filter: blur(2px); }
+.overlay.active { display:flex }
+.minigame { width:95%; max-width:820px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:14px; padding:16px; border:1px solid rgba(255,255,255,0.05) }
+
+/* hearts mini */
+.hearts-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(56px,1fr)); gap:12px }
+.heart { height:64px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:28px; cursor:pointer; user-select:none; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); transition: transform .18s ease, opacity .18s; }
+.heart.collected { transform:scale(.88) rotate(-6deg); opacity:.25; pointer-events:none }
+
+/* memory mini */
+.memory-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap:10px }
+.card-mem { background:rgba(255,255,255,0.04); height:70px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:24px; cursor:pointer; border:1px solid rgba(255,255,255,0.08) }
+.card-mem.flipped { background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#081021; }
+
+/* larger screens */
+@media (min-width:900px){ .board { grid-template-columns: 320px 1fr; gap:18px } }
+
+/* tiny phones */
+@media (max-width:420px){
+  .avatar{ width:56px; height:56px; font-size:16px }
+  .ring{ width:56px; height:56px; font-size:12px }
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+<div class="app" role="application" aria-label="Divine Mystery Love Quiz">
+  <div class="header" role="banner">
+    <div class="title">
+      <div class="logo" aria-hidden="true">💞</div>
+      <div>
+        <div class="h1">Divine Mystery — Love Quiz</div>
+        <div class="sub">Professor-mode: Patient. Engineer-mode: Precise.</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <div class="sub">Playtime: 30–60 min</div>
+      <button class="btn secondary" id="resetBtn" title="Reset progress" aria-label="Reset progress">Reset</button>
+    </div>
+  </div>
+
+  <div class="board" role="main">
+    <!-- LEFT -->
+    <aside class="left" aria-label="Player info and controls">
+      <div class="profile">
+        <div class="avatar" id="avatar">A</div>
+        <div class="info">
+          <h3 id="playerName">My Love</h3>
+          <p id="playerSub">Ready to discover the Divine Mystery?</p>
+        </div>
+      </div>
+
+      <div class="progress-wrap" aria-hidden="false">
+        <div class="ring" id="progRing">0%</div>
+        <div class="scorebox">
+          <div class="stat" id="score">Score: 0</div>
+          <small class="sub" id="levelInfo">Level 1 • Question 1/5</small>
+        </div>
+      </div>
+
+      <div class="lifelines">
+        <h4 style="margin:10px 0 8px">Lifelines</h4>
+        <div class="lifline-list" id="lifelines" role="group" aria-label="lifelines">
+          <button class="lifeline" data-key="hint" aria-label="Use hint"><span>💡</span> <span class="text">Hint (3)</span></button>
+          <button class="lifeline" data-key="skip" aria-label="Skip question"><span>⏭️</span> <span class="text">Skip (2)</span></button>
+          <button class="lifeline" data-key="time" aria-label="Add time"><span>⏱️</span> <span class="text">+15s (2)</span></button>
+        </div>
+      </div>
+
+      <div class="levels">
+        <h4 style="margin:10px 0 6px">Levels</h4>
+        <div id="levelList"></div>
+      </div>
+    </aside>
+
+    <!-- RIGHT -->
+    <section class="right" aria-live="polite">
+      <div class="stage">
+        <div class="card-3d" id="card">
+          <div class="card-inner" id="cardInner" aria-hidden="false">
+            <div class="front">
+              <div class="card-title" id="cardTitle">Welcome, Scholar of Love</div>
+              <div class="card-desc">Professor instructions: Read carefully. Use lifelines sparingly.</div>
+
+              <div class="question" id="questionArea">Press <strong>Start</strong> to begin the Divine Mystery. There are several levels; each level has 5 questions and one mini-game intermission. Good luck.</div>
+
+              <div class="answers" id="answersArea" aria-label="Answer choices"></div>
+
+              <div class="timer" role="timer" aria-live="assertive">
+                <div style="min-width:80px;font-weight:800" id="timerText">00:00</div>
+                <div class="timebar"><div class="timefill" id="timeFill"></div></div>
+              </div>
+
+              <div class="controls">
+                <button class="btn" id="startBtn">Start</button>
+                <button class="btn secondary" id="nextBtn" style="display:none">Next</button>
+                <button class="btn secondary" id="openMiniBtn" style="display:none">Play Mini-game</button>
+                <div style="margin-left:auto; display:flex; gap:8px">
+                  <div style="font-size:0.95rem; color:var(--muted)">Hints left: <span id="hintsLeft">3</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- mini-game overlay -->
+      <div class="overlay" id="overlay" aria-hidden="true">
+        <div class="minigame" id="minigameBox"></div>
+      </div>
+
+    </section>
+  </div>
+</div>
+
+<script>
+/* ======================================================
+   Divine Mystery — Optimized JS Engine (Mobile-First)
+   - Centralized state object
+   - Minimal DOM queries (cached refs)
+   - rAF timers for background only; quiz uses setInterval per second
+   - Persistent save via localStorage
+   ====================================================== */
+
+/* -------------------------
+   Utilities
+------------------------- */
+const $ = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+function el(tag, attrs={}, ...kids){
+  const e = document.createElement(tag);
+  for(const k in attrs){
+    if(k.startsWith('on')) e.addEventListener(k.slice(2), attrs[k]);
+    else if(k==='html') e.innerHTML = attrs[k];
+    else e.setAttribute(k, attrs[k]);
+  }
+  for(const k of kids){
+    if(k==null) continue;
+    if(typeof k==='string') e.appendChild(document.createTextNode(k));
+    else e.appendChild(k);
+  }
+  return e;
+}
+function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+/* -------------------------
+   Data: Levels & Questions
+------------------------- */
+const levelsData = [
+  { id:1, name:"Foundations of Affection", description:"Warm-up questions about love, memory, and small gestures.", questions:[
+      {q:"Which small daily habit often matters most in a relationship?", choices:["Lavish gifts","Consistent listening","Ignoring messages","Only grand gestures"], a:1, hint:"It's about paying attention rather than price."},
+      {q:"A simple 'I care' text is an example of what?", choices:["Transactional favor","Emotional maintenance","Strategic move","Irrelevant action"], a:1, hint:"Short, frequent reminders keep connection alive."},
+      {q:"What's more valuable for trust?", choices:["Secrecy","Reliability","Dramatic apologies","Charisma"], a:1, hint:"Consistency beats drama."},
+      {q:"Which is a 'love language' commonly recognized?", choices:["Quality time","Sales pitch","Competitive dieting","Silent treatment"], a:0, hint:"Spending focused time together."},
+      {q:"What often helps during argument?", choices:["Winning","Shutting down","Active listening","Ignoring"], a:2, hint:"Try to understand before replying."}
+    ]},
+  { id:2, name:"Romantic Chemistry", description:"Questions about attraction, compatibility, and shared goals.", questions:[
+      {q:"What signals emotional availability?", choices:["Closed body language","Avoiding conversation","Open vulnerability","Interrupting"], a:2, hint:"Sharing feelings gently."},
+      {q:"A healthy boundary is:", choices:["Always saying yes","Listening without consent","Expressing limits kindly","Punishing partner"], a:2, hint:"Respectful limits are healthy."},
+      {q:"Compatibility is best measured by:", choices:["Identical hobbies","Shared values","Matching bank accounts","Same friends"], a:1, hint:"Long-term alignment matters."},
+      {q:"Romantic surprise is effective when:", choices:["It matches partner's likes","It benefits you","It's expensive","It's public"], a:0, hint:"Consider what they enjoy."},
+      {q:"Laughter in a relationship often indicates:", choices:["Boredom","Resentment","Emotional bonding","Apathy"], a:2, hint:"Shared humor builds rapport."}
+    ]},
+  { id:3, name:"Deep Hearts", description:"Deeper questions about commitment and future planning.", questions:[
+      {q:"Trust grows primarily through:", choices:["One big gesture","Repeated small acts","Financial dependency","Avoidance"], a:1, hint:"Small acts compound over time."},
+      {q:"Long term conflict handling should be:", choices:["Avoided","Escalated","Collaborative","Ignored"], a:2, hint:"Solve problems together."},
+      {q:"Shared rituals (e.g., weekly date) are:", choices:["Restrictive","Bonding","Pointless","Dramatic"], a:1, hint:"They create predictability and care."},
+      {q:"Saying 'I'm wrong' demonstrates:", choices:["Weakness","Accountability","Indifference","Control"], a:1, hint:"Accountability encourages repair."},
+      {q:"Healthy independence means:", choices:["No contact","Mutual growth","Isolation","One-sided dependence"], a:1, hint:"Supporting each other's growth."}
+    ]},
+  { id:4, name:"Playful Sparks", description:"Fun, playful questions to keep romance light-hearted.", questions:[
+      {q:"A playful text should be:", choices:["Mean","Teasing and kind","Confusing","Cold"], a:1, hint:"Tease with care and warmth."},
+      {q:"Gifts that show thought are:", choices:["Generic","Personalized","Expensive only","Seen by others"], a:1, hint:"Small personal details matter."},
+      {q:"Cute nicknames often:", choices:["Embarrass","Annoy","Create intimacy","Distance people"], a:2, hint:"Endearments increase closeness."},
+      {q:"Inside jokes in a couple:", choices:["Exclude everyone","Hurt feelings","Bond partners","Are rude"], a:2, hint:"Shared language builds identity."},
+      {q:"Romantic playlist is:", choices:["Useless","Thoughtful","Tacky","Irrelevant"], a:1, hint:"Music can trigger memories."}
+    ]}
+];
+
+/* -------------------------
+   State
+------------------------- */
+const state = {
+  playerName: localStorage.getItem('dm_name') || 'My Love',
+  levelIndex: Number(localStorage.getItem('dm_level')) || 0,
+  questionIndex: Number(localStorage.getItem('dm_q')) || 0,
+  score: Number(localStorage.getItem('dm_score')) || 0,
+  lifelines: {
+    hint: Number(localStorage.getItem('dm_hint')) || 3,
+    skip: Number(localStorage.getItem('dm_skip')) || 2,
+    time: Number(localStorage.getItem('dm_time')) || 2
+  },
+  playing: false,
+  perQuestionTime: 40,
+  timer: null,
+  timeLeft: 0,
+  answered: false,
+  lastMini: null
+};
+
+/* -------------------------
+   DOM cache
+------------------------- */
+const startBtn = $('#startBtn');
+const nextBtn = $('#nextBtn');
+const openMiniBtn = $('#openMiniBtn');
+const questionArea = $('#questionArea');
+const answersArea = $('#answersArea');
+const timerText = $('#timerText');
+const timeFill = $('#timeFill');
+const progRing = $('#progRing');
+const scoreNode = $('#score');
+const levelInfoNode = $('#levelInfo');
+const lifelineRoot = $('#lifelines');
+const hintsLeftNode = $('#hintsLeft');
+const overlay = $('#overlay');
+const minigameBox = $('#minigameBox');
+const levelListNode = $('#levelList');
+const resetBtn = $('#resetBtn');
+
+/* -------------------------
+   Persistence
+------------------------- */
+function saveState(){
+  localStorage.setItem('dm_level', state.levelIndex);
+  localStorage.setItem('dm_q', state.questionIndex);
+  localStorage.setItem('dm_score', state.score);
+  localStorage.setItem('dm_hint', state.lifelines.hint);
+  localStorage.setItem('dm_skip', state.lifelines.skip);
+  localStorage.setItem('dm_time', state.lifelines.time);
+  localStorage.setItem('dm_name', state.playerName);
+}
+
+/* -------------------------
+   Init UI
+------------------------- */
+function initUI(){
+  $('#playerName').textContent = state.playerName;
+  $('#avatar').textContent = (state.playerName[0]||'A').toUpperCase();
+
+  // lifelines buttons
+  lifelineRoot.querySelectorAll('.lifeline').forEach(btn=>{
+    btn.addEventListener('click', ()=> useLifeline(btn.dataset.key));
+  });
+
+  // level list
+  levelListNode.innerHTML='';
+  levelsData.forEach((lvl, idx)=>{
+    const div = el('button',{class:'level', onclick:()=> jumpToLevel(idx), 'aria-label':`Go to ${lvl.name}`},
+      el('div',{}, el('strong',{}, lvl.name)),
+      el('small',{}, `Level ${idx+1}`)
+    );
+    levelListNode.appendChild(div);
+  });
+
+  startBtn.onclick = startGame;
+  nextBtn.onclick = nextQuestion;
+  openMiniBtn.onclick = startMiniGame;
+  resetBtn.onclick = resetProgress;
+
+  updateLifelinesUI();
+  updateProgressUI();
+  renderQuestion();
+}
+
+function updateLifelinesUI(){
+  hintsLeftNode.textContent = state.lifelines.hint;
+  lifelineRoot.querySelectorAll('.lifeline').forEach(btn=>{
+    const key = btn.dataset.key;
+    const count = state.lifelines[key];
+    btn.classList.toggle('disabled', count<=0);
+    const label = key==='hint'? 'Hint' : key==='skip'? 'Skip' : '+15s';
+    btn.querySelector('.text').textContent = `${label} (${count})`;
+  });
+}
+
+function updateProgressUI(){
+  const currLevel = levelsData[state.levelIndex] || levelsData[0];
+  const totalLevels = levelsData.length;
+  const qTotal = currLevel.questions.length;
+  const qNumber = clamp(state.questionIndex + 1, 1, qTotal);
+
+  // overall %
+  const totalQuestions = levelsData.reduce((s,l)=> s + l.questions.length, 0);
+  const passedQuestions = levelsData.slice(0, state.levelIndex).reduce((s,l)=> s + l.questions.length, 0) + Math.min(state.questionIndex, qTotal);
+  const overallPct = Math.floor((passedQuestions / totalQuestions) * 100);
+
+  progRing.style.setProperty('--progress', `${overallPct}%`);
+  progRing.textContent = `${overallPct}%`;
+  scoreNode.textContent = `Score: ${state.score}`;
+  levelInfoNode.textContent = `Level ${state.levelIndex+1} • Question ${qNumber}/${qTotal}`;
+}
+
+/* -------------------------
+   Render Question
+------------------------- */
+function renderQuestion(){
+  if(!state.playing){
+    questionArea.innerHTML = `Press <strong>Start</strong> to begin the Divine Mystery. There are ${levelsData.length} levels. Each level: ${levelsData[0].questions.length} questions and one mini-game.`;
+    answersArea.innerHTML = '';
+    startBtn.style.display = 'inline-block';
+    nextBtn.style.display = 'none';
+    openMiniBtn.style.display = 'none';
+    timerText.textContent = formatTime(state.perQuestionTime);
+    timeFill.style.width = '0%';
+    return;
+  }
+
+  // end-of-game
+  if(state.levelIndex >= levelsData.length){
+    finishGame();
+    return;
+  }
+
+  const lvl = levelsData[state.levelIndex];
+  const qset = lvl.questions;
+
+  // end-of-level -> mini-game gate
+  if(state.questionIndex >= qset.length){
+    questionArea.innerHTML = `<strong>Level ${state.levelIndex+1} complete!</strong><br/>Play the mini-game to earn bonus points and unlock next level.`;
+    answersArea.innerHTML = '';
+    startBtn.style.display = 'none';
+    nextBtn.style.display = 'none';
+    openMiniBtn.style.display = 'inline-block';
+    updateProgressUI();
+    return;
+  }
+
+  const q = qset[state.questionIndex];
+  $('#cardTitle').textContent = `${lvl.name} — Question ${state.questionIndex+1}`;
+  questionArea.textContent = q.q;
+  answersArea.innerHTML = '';
+  q.choices.forEach((c, idx)=>{
+    const node = el('button', {class:'answer', tabindex:0, 'aria-label':c}, c);
+    node.addEventListener('click', ()=> selectAnswer(idx));
+    node.addEventListener('keydown', ev=>{ if(ev.key==='Enter' || ev.key===' '){ ev.preventDefault(); selectAnswer(idx); } });
+    answersArea.appendChild(node);
+  });
+
+  state.answered = false;
+  startTimer(state.perQuestionTime);
+  startBtn.style.display = 'none';
+  nextBtn.style.display = 'none';
+  openMiniBtn.style.display = 'none';
+  updateProgressUI();
+}
+
+/* -------------------------
+   Timer
+------------------------- */
+function startTimer(seconds){
+  clearTimer();
+  state.timeLeft = seconds;
+  timeFill.style.width = '100%';
+  updateTimerText();
+  const total = seconds;
+  state.timer = setInterval(()=>{
+    state.timeLeft--;
+    if(state.timeLeft < 0){
+      clearTimer();
+      onTimeUp();
+    } else {
+      updateTimerText();
+      timeFill.style.width = `${(state.timeLeft/total)*100}%`;
+    }
+  }, 1000);
+}
+function clearTimer(){ if(state.timer){ clearInterval(state.timer); state.timer = null; } }
+function updateTimerText(){ timerText.textContent = formatTime(state.timeLeft); }
+function formatTime(sec){ const s = Math.max(0, Math.floor(sec)); const m = Math.floor(s/60); const r = s%60; return `${String(m).padStart(2,'0')}:${String(r).padStart(2,'0')}`; }
+function onTimeUp(){
+  if(state.answered) return;
+  Array.from(answersArea.children).forEach(a=> a.classList.add('wrong'));
+  state.answered = true;
+  state.score = Math.max(0, state.score - 2);
+  saveState(); updateProgressUI();
+  setTimeout(()=>{ revealCorrect(); nextBtn.style.display='inline-block'; }, 800);
+}
+
+/* -------------------------
+   Answer handling
+------------------------- */
+function selectAnswer(idx){
+  if(state.answered) return;
+  state.answered = true;
+  clearTimer();
+
+  const lvl = levelsData[state.levelIndex];
+  const q = lvl.questions[state.questionIndex];
+  const answers = Array.from(answersArea.children);
+  answers.forEach((a,i)=>{
+    if(i===q.a) a.classList.add('correct');
+    if(i===idx && i!==q.a) a.classList.add('wrong');
+    a.style.pointerEvents='none';
+  });
+
+  if(idx===q.a){
+    state.score += 10;
+    flashAccent();
+  } else {
+    state.score = Math.max(0, state.score - 3);
+  }
+  saveState(); updateProgressUI();
+  setTimeout(()=>{ nextBtn.style.display='inline-block'; }, 700);
+}
+
+function revealCorrect(){
+  const lvl = levelsData[state.levelIndex];
+  const q = lvl.questions[state.questionIndex];
+  Array.from(answersArea.children).forEach((a,i)=>{ if(i===q.a) a.classList.add('correct'); });
+}
+
+/* -------------------------
+   Flow controls
+------------------------- */
+function startGame(){
+  state.playing = true;
+  if(state.levelIndex >= levelsData.length){ state.levelIndex=0; state.questionIndex=0; state.score=0; }
+  saveState(); renderQuestion();
+}
+function nextQuestion(){
+  const lvl = levelsData[state.levelIndex];
+  const qLen = lvl.questions.length;
+  if(state.questionIndex < qLen - 1) state.questionIndex++;
+  else state.questionIndex = qLen; // end-of-level sentinel
+  state.answered = false; saveState(); renderQuestion();
+}
+function jumpToLevel(idx){ state.levelIndex = idx; state.questionIndex = 0; saveState(); renderQuestion(); }
+
+/* -------------------------
+   Lifelines
+------------------------- */
+function useLifeline(key){
+  if(!state.playing) return;
+  if(state.lifelines[key] <= 0) return;
+  state.lifelines[key]--;
+  if(key==='hint'){
+    const q = levelsData[state.levelIndex]?.questions[state.questionIndex];
+    q?.hint ? showToast('Hint: '+q.hint) : showToast('No hint available.');
+  } else if(key==='skip'){
+    showToast('Question skipped.');
+    nextQuestion();
+  } else if(key==='time'){
+    state.timeLeft = clamp(state.timeLeft + 15, 0, state.perQuestionTime);
+    updateTimerText(); showToast('+15s added');
+  }
+  updateLifelinesUI(); saveState();
+}
+
+/* -------------------------
+   Mini-games
+------------------------- */
+function startMiniGame(){
+  overlay.classList.add('active');
+  overlay.setAttribute('aria-hidden','false');
+  if(state.lastMini === 'hearts' || state.lastMini===null){ state.lastMini='memory'; startMemoryMini(); }
+  else { state.lastMini='hearts'; startHeartsMini(); }
+}
+
+function endMiniGame(bonus){
+  const gain = Math.max(0, Number(bonus)||0);
+  state.score += gain;
+  showToast(`Mini-game complete! Bonus +${gain}`);
+  overlay.classList.remove('active');
+  overlay.setAttribute('aria-hidden','true');
+  state.levelIndex = Math.min(levelsData.length - 1, state.levelIndex + 1);
+  state.questionIndex = 0; state.answered=false; saveState(); renderQuestion();
+}
+
+// Hearts collector
+function startHeartsMini(){
+  minigameBox.innerHTML='';
+  const header = el('div',{}, el('h3',{},'Heart Collector — find & click hearts'), el('p',{},'Collect hearts quickly. Each heart gives bonus points.'));
+  const grid = el('div',{class:'hearts-grid', style:'margin-top:12px'});
+  const total = 12; let collected = 0;
+  for(let i=0;i<total;i++){
+    const heart = el('button',{class:'heart', tabindex:0, 'aria-label':'heart'}, '💖');
+    const isSpecial = Math.random() < 0.18;
+    heart.addEventListener('click', ()=>{
+      if(heart.classList.contains('collected')) return;
+      heart.classList.add('collected'); collected++;
+      heart.textContent = isSpecial ? '💎' : '💖';
+      const points = isSpecial ? 8 : 3; state.score += points; showToast(`Collected +${points}`);
+      updateProgressUI(); saveState();
+      if(collected >= Math.floor(total*0.6)) setTimeout(()=> endMiniGame(collected*2), 500);
+    });
+    grid.appendChild(heart);
+  }
+  const btn = el('button',{class:'btn', onclick:()=> endMiniGame(Math.floor(Math.random()*6))}, 'Give Up');
+  minigameBox.append(header, grid, el('div',{style:'margin-top:12px;display:flex;gap:8px;align-items:center'}, btn));
+}
+
+// Memory match
+function startMemoryMini(){
+  minigameBox.innerHTML='';
+  const header = el('div',{}, el('h3',{},'Memory Match — find matching pairs'), el('p',{},'Flip cards and find pairs. Quick matches = more points.'));
+  const icons = ['🌹','🌟','💫','🍫','🎵','💌','🎁','🔥'];
+  const deck = icons.concat(icons).sort(()=> Math.random()-0.5);
+  const grid = el('div',{class:'memory-grid', style:'margin-top:12px'});
+  let first=null, second=null, lock=false, pairs=0;
+  deck.forEach(icon=>{
+    const c = el('button',{class:'card-mem', tabindex:0, 'aria-label':'card'});
+    c.dataset.icon = icon;
+    c.addEventListener('click', ()=>{
+      if(lock || c.classList.contains('flipped')) return;
+      c.classList.add('flipped'); c.textContent = icon;
+      if(!first){ first=c; return; }
+      second=c; lock=true;
+      setTimeout(()=>{
+        if(first.dataset.icon === second.dataset.icon){
+          pairs++; state.score += 6; first.style.pointerEvents='none'; second.style.pointerEvents='none'; showToast('+6 bonus');
+        } else {
+          first.classList.remove('flipped'); first.textContent='';
+          second.classList.remove('flipped'); second.textContent='';
+        }
+        first=second=null; lock=false; updateProgressUI(); saveState();
+        if(pairs >= icons.length){ endMiniGame(icons.length*4 + Math.floor(Math.random()*6)); }
+      }, 650);
+    });
+    grid.appendChild(c);
+  });
+  const btn = el('button',{class:'btn', onclick:()=> endMiniGame(Math.floor(Math.random()*6))}, 'Give Up');
+  minigameBox.append(header, grid, el('div',{style:'margin-top:12px;display:flex;gap:8px;align-items:center'}, btn));
+}
+
+/* -------------------------
+   Finish & Reset
+------------------------- */
+function finishGame(){
+  clearTimer();
+  $('#cardTitle').textContent = 'Divine Mystery — Complete';
+  questionArea.innerHTML = `Congratulations. You've completed all levels. Final score: <strong>${state.score}</strong>.`;
+  answersArea.innerHTML = '';
+  startBtn.style.display = 'inline-block'; startBtn.textContent = 'Play Again';
+  nextBtn.style.display = 'none'; openMiniBtn.style.display = 'none';
+  showToast('You finished the Divine Mystery. Well done!');
+  saveState();
+}
+
+function resetProgress(){
+  if(!confirm('Reset Divine Mystery progress? This will clear your score and lifelines.')) return;
+  localStorage.removeItem('dm_level');
+  localStorage.removeItem('dm_q');
+  localStorage.removeItem('dm_score');
+  localStorage.removeItem('dm_hint');
+  localStorage.removeItem('dm_skip');
+  localStorage.removeItem('dm_time');
+  localStorage.removeItem('dm_name');
+  state.levelIndex=0; state.questionIndex=0; state.score=0; state.lifelines={hint:3, skip:2, time:2}; state.playing=false; saveState(); updateLifelinesUI(); updateProgressUI(); renderQuestion();
+}
+
+/* -------------------------
+   Visual helpers
+------------------------- */
+let toastTimer=null;
+function showToast(msg){
+  let toast = document.getElementById('dm_toast');
+  if(!toast){
+    toast = el('div',{id:'dm_toast', style:'position:fixed;top:16px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,var(--accent),var(--accent-2));padding:10px 14px;border-radius:12px;color:#081021;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,0.6);font-weight:800'});
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg; toast.style.opacity='1';
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> toast.style.opacity='0', 2300);
+}
+function flashAccent(){ const elx = document.querySelector('.logo'); elx?.animate([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}], {duration:420, easing:'ease'}); }
+
+/* -------------------------
+   Keyboard a11y helpers
+------------------------- */
+document.addEventListener('keydown', (e)=>{
+  if(e.key===' ' && document.activeElement.tagName !== 'INPUT'){
+    e.preventDefault();
+    if(startBtn.style.display !== 'none') startGame();
+    else if(nextBtn.style.display !== 'none') nextQuestion();
+  }
+});
+
+/* -------------------------
+   Particle Background (optimized)
+------------------------- */
+(function initParticles(){
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let w=canvas.width=innerWidth, h=canvas.height=innerHeight;
+  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+  function resize(){
+    w = canvas.width = Math.floor(innerWidth * dpr);
+    h = canvas.height = Math.floor(innerHeight * dpr);
+    canvas.style.width = innerWidth + 'px';
+    canvas.style.height = innerHeight + 'px';
+  }
+  resize();
+  window.addEventListener('resize', ()=>{ resize(); init(true); });
+
+  let particles=[]; let num=0;
+  function init(keep=false){
+    num = Math.floor((innerWidth*innerHeight)/48000); // lighter for mobile
+    const make = ()=>({ x:Math.random()*w, y:Math.random()*h, r: (Math.random()*1.4+0.6)*dpr, vx:(Math.random()-0.5)*0.15*dpr, vy:(Math.random()-0.5)*0.15*dpr });
+    particles = keep && particles.length ? particles.slice(0, num) : Array.from({length:num}, make);
+    while(particles.length < num) particles.push(make());
+  }
+  init();
+
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    for(const p of particles){
+      p.x += p.vx; p.y += p.vy;
+      if(p.x<0) p.x = w; if(p.x>w) p.x=0;
+      if(p.y<0) p.y = h; if(p.y>h) p.y=0;
+      const g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*10);
+      g.addColorStop(0, 'rgba(255,111,163,0.08)');
+      g.addColorStop(0.7,'rgba(0,212,255,0.035)');
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.beginPath();
+      ctx.fillStyle = g;
+      ctx.arc(p.x,p.y,p.r*6,0,Math.PI*2);
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+/* -------------------------
+   Boot
+------------------------- */
+initUI();
+renderQuestion();
+
+// expose for debugging
+window.DM = { state, levelsData, startGame, nextQuestion, useLifeline, resetProgress };
+</script>
+</body>
+</html>

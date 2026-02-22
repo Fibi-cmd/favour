@@ -1,0 +1,187 @@
+﻿<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Speech Converter</title>
+    <style>
+  .navbar {
+    position: fixed;   /* sticks it */
+    top: 0; left: 0;   /* at top of screen */
+    width: 100%;       /* full width */
+    padding: 20px;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+  }
+  .navbar .nav-link {
+    color: white;
+    margin-right: 15px;
+    text-decoration: none;
+  }
+  /* make room so your content isn’t hidden under the navbar */
+  .page-content {
+    margin-top: 80px; /* same or slightly larger than your navbar’s height */
+  }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }.container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+        color: #333;
+        text-align: center;
+    }
+
+    textarea {
+        width: 100%;
+        height: 150px;
+        margin: 20px 0;
+        padding: 10px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        resize: vertical;
+    }
+
+    .button-container {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+
+    #playBtn {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    #playBtn.paused {
+        background-color: #ff9800;
+    }
+
+    #downloadBtn {
+        background-color: #2196F3;
+        color: white;
+    }
+
+    #useOtherVoicesBtn {
+        background-color: #6a1b9a;
+        color: white;
+    }
+
+    button:hover {
+        opacity: 0.9;
+    }
+
+    #status {
+        text-align: center;
+        margin-top: 15px;
+        color: #666;
+    }
+</style>
+
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="text2speech.html" class="nav-link">T2S</a>
+    <a href="cal.html" class="nav-link">Cal.c</a>
+    <a href="learn.html" class="nav-link">Learn</a>
+    <a href="lovecal.html" class="nav-link">Love Cal.c</a>
+    <a href="games.html" class="nav-link">Games</a>
+    <a href="contacts.html" class="nav-link">favour Tub</a>
+  </nav>
+
+    <div class="page-content">
+        <h1>Text to Speech Converter</h1>
+        <textarea id="textInput" placeholder="favour! Enter text here..."></textarea>
+        <div class="button-container">
+            <button id="playBtn">Play</button>
+            <button id="downloadBtn">Download MP3</button>
+            <button id="useOtherVoicesBtn" onclick="openNaturalReaders()">Use Other Voices</button>
+        </div>
+        <div id="status">Ready</div>
+    </div><script>
+    const textInput = document.getElementById('textInput');
+    const playBtn = document.getElementById('playBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const useOtherVoicesBtn = document.getElementById('useOtherVoicesBtn');
+    const statusDiv = document.getElementById('status');
+
+    let speech = null;
+    let isSpeaking = false;
+
+    function toggleSpeech() {
+        if (isSpeaking) {
+            window.speechSynthesis.cancel();
+            isSpeaking = false;
+            playBtn.textContent = 'Play';
+            statusDiv.textContent = 'Paused';
+        } else {
+            if (textInput.value.trim() === '') {
+                statusDiv.textContent = 'Please enter some text';
+                return;
+            }
+            speech = new SpeechSynthesisUtterance(textInput.value);
+            speech.lang = 'en-US';
+            speech.onstart = () => {
+                isSpeaking = true;
+                playBtn.textContent = 'Pause';
+                statusDiv.textContent = 'Speaking...';
+            };
+            speech.onend = () => {
+                isSpeaking = false;
+                playBtn.textContent = 'Play';
+                statusDiv.textContent = 'Finished';
+            };
+            window.speechSynthesis.speak(speech);
+        }
+    }
+
+    async function downloadAudio() {
+        if (textInput.value.trim() === '') {
+            statusDiv.textContent = 'Please enter some text first';
+            return;
+        }
+        statusDiv.textContent = 'Downloading... (Server implementation needed)';
+        try {
+            const blob = new Blob([textInput.value], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'speech.mp3';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            statusDiv.textContent = 'Download started (demo)';
+        } catch (error) {
+            statusDiv.textContent = 'Download failed - needs server implementation';
+            console.error(error);
+        }
+    }
+
+    function openNaturalReaders() {
+        window.open('https://www.naturalreaders.com/online/', '_blank');
+    }
+
+    playBtn.addEventListener('click', toggleSpeech);
+    downloadBtn.addEventListener('click', downloadAudio);
+</script>
+
+</body>
+</html>

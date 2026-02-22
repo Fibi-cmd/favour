@@ -1,0 +1,155 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>3D Synta AI Popup</title>
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --accent:#7c3aed;
+      --glass: rgba(255,255,255,0.06);
+      --text:#e6eef8;
+    }
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{
+      background: radial-gradient(1200px 600px at 10% 20%, rgba(124,58,237,0.12), transparent),
+                  radial-gradient(800px 400px at 90% 80%, rgba(14,165,233,0.06), transparent),
+                  var(--bg);
+      color:var(--text);display:flex;align-items:center;justify-content:center;overflow:hidden
+    }
+
+    /* 3D Scene */
+    .stage{width:640px;height:420px;perspective:1200px;display:flex;align-items:center;justify-content:center}
+    .scene{
+      width:360px;height:260px;transform-style:preserve-3d;animation:float 8s ease-in-out infinite;position:relative
+    }
+    @keyframes float{0%{transform:translateY(-12px) rotateX(12deg) rotateY(-18deg)}50%{transform:translateY(12px) rotateX(-8deg) rotateY(18deg)}100%{transform:translateY(-12px) rotateX(12deg) rotateY(-18deg)}}
+
+    .cube{width:220px;height:220px;position:absolute;left:70px;top:20px;transform-style:preserve-3d;animation:spin 10s linear infinite}
+    @keyframes spin{from{transform:rotateX(0deg) rotateY(0deg)}to{transform:rotateX(360deg) rotateY(360deg)}}
+    .face{position:absolute;width:220px;height:220px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;backface-visibility:hidden;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+    .f1{background:linear-gradient(135deg,#7c3aed,#a78bfa);transform:translateZ(110px)}
+    .f2{background:linear-gradient(135deg,#06b6d4,#7dd3fc);transform:rotateY(180deg) translateZ(110px)}
+    .f3{background:linear-gradient(135deg,#34d399,#86efac);transform:rotateY(90deg) translateZ(110px)}
+    .f4{background:linear-gradient(135deg,#fb7185,#fca5a5);transform:rotateY(-90deg) translateZ(110px)}
+    .f5{background:linear-gradient(135deg,#f97316,#fdba74);transform:rotateX(90deg) translateZ(110px)}
+    .f6{background:linear-gradient(135deg,#60a5fa,#93c5fd);transform:rotateX(-90deg) translateZ(110px)}
+
+    /* ground & shadow */
+    .ground{position:absolute;left:0;right:0;bottom:18px;height:16px;border-radius:50%;filter:blur(12px);opacity:0.35;background:linear-gradient(90deg,rgba(0,0,0,0.55),rgba(0,0,0,0.25))}
+
+    /* info card */
+    .card{position:absolute;left:16px;top:20px;width:300px;padding:18px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.03),var(--glass));backdrop-filter: blur(6px);box-shadow:0 6px 40px rgba(2,6,23,0.6)}
+    .card h1{margin:0;font-size:18px}
+    .card p{margin:10px 0 0 0;font-size:13px;color:rgba(230,238,248,0.85)}
+
+    /* Modal popup */
+    .overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(2,6,23,0.6),rgba(2,6,23,0.8));display:flex;align-items:center;justify-content:center;z-index:50}
+    .modal{width:420px;max-width:90%;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.03));border-radius:14px;padding:22px;box-shadow:0 20px 60px rgba(2,6,23,0.7);transform:translateZ(40px);text-align:left}
+    .modal h2{margin:0 0 8px 0;font-size:20px}
+    .modal p{margin:0 0 16px 0;color:rgba(230,238,248,0.95);line-height:1.4}
+    .actions{display:flex;gap:12px;justify-content:flex-end}
+    .btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600}
+    .btn-primary{background:var(--accent);color:white;box-shadow:0 8px 24px rgba(124,58,237,0.18)}
+    .btn-ghost{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,0.06)}
+
+    /* Loader overlay shown after cancel */
+    .loader-overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(2,6,23,0.7),rgba(2,6,23,0.9));display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:60;gap:18px}
+    .spinner{width:80px;height:80px;border-radius:50%;border:8px solid rgba(255,255,255,0.06);border-top-color:var(--accent);animation:spin2 1.1s linear infinite;box-shadow:0 6px 24px rgba(124,58,237,0.18)}
+    @keyframes spin2{to{transform:rotate(360deg)}}
+    .wait-msg{font-size:18px;font-weight:700;color:var(--text);text-align:center}
+    .sub-msg{font-size:13px;color:rgba(230,238,248,0.85);text-align:center}
+
+    /* small responsive tweak */
+    @media(max-width:560px){.stage{width:92vw;height:62vh}.card{display:none}.cube{left:30px}}
+  </style>
+</head>
+<body>
+  <div class="stage" aria-hidden>
+    <div class="scene">
+      <div class="card">
+        <h1>Synta AI — Campus 3D Lab</h1>
+        <p>Animating a friendly cube and a helpful lamp. This demo shows a popup and a continuous loader after dismissing the popup.</p>
+      </div>
+
+      <div class="cube" id="cube" aria-hidden>
+        <div class="face f1">Synta</div>
+        <div class="face f2">AI</div>
+        <div class="face f3">Hello</div>
+        <div class="face f4">favour</div>
+        <div class="face f5">Be Patient</div>
+        <div class="face f6">Loading...</div>
+      </div>
+
+      <div class="ground" aria-hidden></div>
+    </div>
+  </div>
+
+  <!-- Popup modal (shows on load) -->
+  <div class="overlay" id="overlay">
+    <div class="modal" role="dialog" aria-labelledby="modal-title" aria-describedby="modal-desc">
+      <h2 id="modal-title">Hello! favour — I'm Synta AI.</h2>
+      <p id="modal-desc">Is like your Network is bad, Please try again after 24 hours😊.</p>
+      <div class="actions">
+        <button class="btn btn-ghost" id="cancelBtn">Cancel</button>
+        <button class="btn btn-primary" id="okBtn">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loader overlay (hidden until cancel clicked) -->
+  <div class="loader-overlay" id="loader" style="display:none;">
+    <div class="spinner" aria-hidden></div>
+    <div class="wait-msg">Please wait, favour be patient.</div>
+    <div class="sub-msg">This loader will continue until the session ends.</div>
+  </div>
+
+  <script>
+    // Elements
+    const overlay = document.getElementById('overlay');
+    const okBtn = document.getElementById('okBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const loader = document.getElementById('loader');
+
+    // Show popup on load (already visible by HTML). Focus management:
+    window.addEventListener('load', ()=>{
+      // trap focus lightly: focus the OK button for keyboard users
+      okBtn.focus();
+    });
+
+    // OK simply hides the popup and leaves the scene
+    okBtn.addEventListener('click', ()=>{
+      overlay.style.display = 'none';
+    });
+
+    // Cancel removes the popup and triggers an indefinite loader with message
+    cancelBtn.addEventListener('click', ()=>{
+      // hide popup
+      overlay.style.display = 'none';
+      // show loader indefinitely
+      loader.style.display = 'flex';
+      // Optionally, we can also slightly slow the cube rotation to show 'processing'
+      document.getElementById('cube').style.animationPlayState = 'running';
+      document.getElementById('cube').style.animationDuration = '35s';
+
+      // Accessibility: announce to screen readers
+      const live = document.createElement('div');
+      live.setAttribute('role','status');
+      live.setAttribute('aria-live','polite');
+      live.style.position='absolute';
+      live.style.left='-9999px';
+      live.innerText = 'Please wait, favour be patient.';
+      document.body.appendChild(live);
+    });
+
+    // Extra: allow pressing Esc to close popup (same as OK)
+    window.addEventListener('keydown',(e)=>{
+      if(e.key === 'Escape' && overlay.style.display !== 'none'){
+        overlay.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>

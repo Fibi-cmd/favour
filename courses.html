@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Courses - WebMaster Academy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ======= Base Styles ======= */
+        :root {
+            --primary: #2A2A72;
+            --secondary: #009FFD;
+            --accent: #FF3C00;
+            --text: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+        }
+
+        /* ======= Navigation ======= */
+        nav {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 1rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        /* ======= Courses Section ======= */
+        .courses-hero {
+            background: linear-gradient(rgba(42,42,114,0.9), rgba(0,159,253,0.9)),
+                        url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80');
+            background-size: cover;
+            background-position: center;
+            padding: 8rem 5%;
+            text-align: center;
+            color: white;
+        }
+
+        .course-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 4rem 5%;
+            perspective: 1000px;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            min-height: 400px;
+            transform-style: preserve-3d;
+            transition: all 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .course-card:hover {
+            transform: rotateY(180deg);
+        }
+
+        .course-front, .course-back {
+            backface-visibility: hidden;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .course-front {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 15px;
+        }
+
+        .course-back {
+            background: white;
+            transform: rotateY(180deg);
+            color: var(--text);
+            border: 3px solid var(--primary);
+            border-radius: 15px;
+        }
+
+        .course-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .course-title {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .course-desc {
+            text-align: center;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .start-learning-btn {
+            padding: 12px 30px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .start-learning-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,60,0,0.3);
+        }
+
+        /* ======= Course Colors ======= */
+        .course-card:nth-child(1) .course-front { background: linear-gradient(135deg, #2A2A72, #009FFD); }
+        .course-card:nth-child(2) .course-front { background: linear-gradient(135deg, #FF416C, #FF4B2B); }
+        .course-card:nth-child(3) .course-front { background: linear-gradient(135deg, #00b09b, #96c93d); }
+        .course-card:nth-child(4) .course-front { background: linear-gradient(135deg, #DA22FF, #9733EE); }
+        .course-card:nth-child(5) .course-front { background: linear-gradient(135deg, #f46b45, #eea849); }
+        .course-card:nth-child(6) .course-front { background: linear-gradient(135deg, #1D976C, #93F9B9); }
+
+        /* ======= Mobile Responsive ======= */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--primary);
+                flex-direction: column;
+                padding: 1rem;
+                text-align: center;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .course-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .courses-hero {
+                padding: 4rem 5%;
+            }
+
+            .course-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="home.html" class="logo">WebMaster</a>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="nav-links">
+                <a href="home.html"><i class="fas fa-home"></i>Home</a>
+                <a href="courses.html"><i class="fas fa-book"></i>Courses</a>
+                <a href="mentors.html"><i class="fas fa-users"></i>Mentors</a>
+                <a href="projects.html"><i class="fas fa-project-diagram"></i>Projects</a>
+                <a href="certification.html"><i class="fas fa-certificate"></i>Certification</a>
+                <a href="contact.html"><i class="fas fa-envelope"></i>favour Tub</a>
+                <a href="login.html"><i class="fas fa-user"></i>Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Courses Hero -->
+    <section class="courses-hero">
+        <h1>Transform Your Career</h1>
+        <p>Interactive 3D flip cards to explore our courses</p>
+    </section>
+
+    <!-- Course Cards -->
+    <div class="course-container">
+        <!-- Computer Science -->
+        <div class="course-card">
+            <div class="course-front">
+                <i class="fas fa-laptop-code course-icon"></i>
+                <h2 class="course-title">Computer Science</h2>
+                <p class="course-desc">Master programming & software development</p>
+            </div>
+            <div class="course-back">
+                <h3 class="course-title">Curriculum Includes</h3>
+                <ul class="course-desc">
+                    <li>Full-stack Development</li>
+                    <li>AI & Machine Learning</li>
+                    <li>Cloud Computing</li>
+                </ul>
+                <a href="computer-science.html" class="start-learning-btn">Start Learning</a>
+            </div>
+        </div>
+
+        <!-- Chemistry -->
+        <div class="course-card">
+            <div class="course-front">
+                <i class="fas fa-flask course-icon"></i>
+                <h2 class="course-title">Chemistry</h2>
+                <p class="course-desc">Explore molecular transformations</p>
+            </div>
+            <div class="course-back">
+                <h3 class="course-title">Key Topics</h3>
+                <ul class="course-desc">
+                    <li>Organic Chemistry</li>
+                    <li>Analytical Methods</li>
+                    <li>Industrial Processes</li>
+                </ul>
+                <a href="chemistry.html" class="start-learning-btn">Start Learning</a>
+            </div>
+        </div>
+
+        <!-- Fishery -->
+        <div class="course-card">
+            <div class="course-front">
+                <i class="fas fa-fish course-icon"></i>
+                <h2 class="course-title">Aquatic Sciences</h2>
+                <p class="course-desc">Modern aquaculture techniques</p>
+            </div>
+            <div class="course-back">
+                <h3 class="course-title">Modules Include</h3>
+                <ul class="course-desc">
+                    <li>Fishery Management</li>
+                    <li>Species Conservation</li>
+                    <li>Water Quality Control</li>
+                </ul>
+                <a href="aquatic-sciences.html" class="start-learning-btn">Start Learning</a>
+            </div>
+        </div>
+
+        <!-- Incubation Technology -->
+        <div class="course-card">
+            <div class="course-front">
+                <i class="fas fa-egg course-icon"></i>
+                <h2 class="course-title">Incubation Science</h2>
+                <p class="course-desc">Master egg hatching techniques</p>
+            </div>
+            <div class="course-back">
+                <h3 class="course-title">You'll Learn</h3>
+                <ul class="course-desc">
+                    <li>Incubator Design</li>
+                    <li>Species Protocols</li>
+                    <li>Hatchling Care</li>
+                </ul>
+                <a href="incubation-science.html" class="start-learning-btn">Start Learning</a>
+            </div>
+        </div>
+
+        <!-- Mathematics -->
+        <div class="course-card">
+            <div class="course-front">
+                <i class="fas fa-calculator course-icon"></i>
+                <h2 class="course-title">Mathematics</h2>
+                <p class="course-desc">From algebra to calculus</p>
+            </div>
+            <div class="course-back">
+                <h3 class="course-title">Core Subjects</h3>
+                <ul class="course-desc">
+                    <li>Linear Algebra</li>
+                    <li>Differential Equations</li>
+                    <li>Statistics</li>
+                </ul>
+                <a href="mathematics.html" class="start-learning-btn">Start Learning</a>
+            </div>
+        </div>
+
+        <!-- Cyber Security -->
+        <div class="course-card">
+            <div class="course-front">
+                <i class="fas fa-shield-alt course-icon"></i>
+                <h2 class="course-title">Cyber Security</h2>
+                <p class="course-desc">Defend digital frontiers</p>
+            </div>
+            <div class="course-back">
+                <h3 class="course-title">Key Focus Areas</h3>
+                <ul class="course-desc">
+                    <li>Ethical Hacking</li>
+                    <li>Network Security</li>
+                    <li>Cryptography</li>
+                </ul>
+                <a href="cyber-security.html" class="start-learning-btn">Start Learning</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2023 WebMaster Academy. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+
+        // Smooth Card Reset
+        document.querySelectorAll('.course-card').forEach(card => {
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'rotateY(0deg)';
+            });
+        });
+    </script>
+</body>
+</html>

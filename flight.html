@@ -1,0 +1,504 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Planet Defense - favour</title>
+<style>
+  :root {
+    --ui-bg: rgba(0,0,0,0.45);
+    --ui-br: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: #000; /* Galaxy backdrop is drawn on canvas */
+    color: #fff;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    text-align: center;
+  }
+  #menu, #game, #gameOver, #levelComplete, #upgradeMenu {
+    display: none;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px;
+  }
+  #menu { display: flex; }
+  h1 { margin: 8px 0 4px; }
+  p { margin: 6px 0; }
+  canvas { background: transparent; display:block; }
+  .btn {
+    margin: 8px;
+    padding: 12px 18px;
+    background: #2b2b2b;
+    border: 1px solid #444;
+    border-radius: var(--ui-br);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  }
+  .btn:disabled { background: #151515; color: #777; border-color:#222; cursor: not-allowed; }
+  #levels { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; max-width:900px; }
+  #healthBar {
+    position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+    width: min(800px, 86vw); height: 18px; background: #3a0000; border: 2px solid #fff; border-radius: 10px; overflow:hidden;
+    box-shadow: 0 0 12px rgba(255,0,0,.25);
+  }
+  #health { width: 100%; height: 100%; background: linear-gradient(90deg, #38ff4b, #19b84a); transition: width .2s; }
+  #scoreDisplay, #coinGemDisplay, #hint {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    font-size: 16px; text-shadow: 0 2px 6px rgba(0,0,0,.5);
+  }
+  #scoreDisplay { top: 38px; color: #ffe36e; }
+  #coinGemDisplay { top: 62px; color: #7ee6ff; }
+  #hint { bottom: 10px; color: #ddd; background: var(--ui-bg); padding: 6px 10px; border-radius: var(--ui-br); }
+  #panShield { position:absolute; inset:0; touch-action: none; }
+
+  /* reward visuals */
+  #rewardVisual { margin: 12px 0; }
+  .rewardIcon { font-size: 56px; margin: 14px 0; animation: pop 700ms cubic-bezier(.2,.9,.3,1) forwards; }
+  .celebration3d { display:inline-block; font-size:72px; transform-style:preserve-3d; animation: tilt3d 1600ms ease-in-out infinite; }
+  @keyframes pop { from { transform: scale(.2); opacity:0 } to { transform: scale(1); opacity:1 } }
+  @keyframes tilt3d { 0%{ transform: rotateX(0deg) rotateY(0deg) } 50%{ transform: rotateX(18deg) rotateY(15deg)} 100%{ transform: rotateX(0deg) rotateY(0deg)} }
+
+</style>
+</head>
+<body>
+  <div id="menu">
+    <h1>🌍 Planet Defense</h1>
+    <p>Welcome, <strong>favour</strong>! Defend <strong>Planet B</strong> across 20 levels.</p>
+    <p style="max-width:680px">Tap/Click a level to start. Drag anywhere in-game to move your jet (up, down, left, right). Tap/Click to fire.</p>
+    <div id="levels"></div>
+  </div>
+
+  <div id="game">
+    <div id="healthBar"><div id="health"></div></div>
+    <div id="scoreDisplay">Score: 0</div>
+    <div id="coinGemDisplay">Coins: 0 | Gems: 0</div>
+    <canvas id="gameCanvas"></canvas>
+    <div id="hint">Drag to move • Tap/Click to shoot</div>
+    <!-- Transparent overlay that receives pointer/touch without scrolling the page -->
+    <div id="panShield"></div>
+  </div>
+
+  <div id="gameOver">
+    <h1>favour, you lose 😢</h1>
+    <p>Do you want to retry?</p>
+    <button class="btn" onclick="retryLevel()">Yes</button>
+    <button class="btn" onclick="backToMenu()">No</button>
+  </div>
+
+  <div id="levelComplete">
+    <h1>Level Complete 🎉</h1>
+    <div id="rewardVisual"></div>
+    <p id="rewardText"></p>
+    <button class="btn" onclick="openUpgradeMenu()">Upgrade</button>
+    <button class="btn" onclick="nextLevel()">Next Level</button>
+  </div>
+
+  <div id="upgradeMenu">
+    <h1>🔧 Upgrade Shop</h1>
+    <p>Use gems to upgrade your defender!</p>
+    <p id="gemCount">Gems: 0</p>
+    <button class="btn" onclick="upgradeGun()">Upgrade Gun (5 Gems)</button>
+    <button class="btn" onclick="upgradeJet()">Upgrade Jet (5 Gems)</button>
+    <button class="btn" onclick="backToLevelComplete()">Back</button>
+  </div>
+
+<script>
+// ====== Core State ======
+const totalLevels = 20;
+let unlockedLevels = JSON.parse(localStorage.getItem('unlockedLevels')) || [1];
+let currentLevel = 1;
+let health = 100;
+let gameRunning = false;
+let enemiesDestroyed = 0;
+let requiredKills = 0; // ADDED: number of enemies to kill to finish the current level
+let playerX = 0, playerY = 0;
+let score = 0;
+let coins = 0;
+let gems = parseInt(localStorage.getItem('gems')) || 0;
+let bulletPower = parseInt(localStorage.getItem('bulletPower')) || 1; // affects size/damage
+let fireAuto = false; // keep tap/click to fire by default
+
+const rewards = [
+  "A bag of gold","Silver trophy","Bronze ring","Red gold bar","Golden crown",
+  "Diamond shield","Sapphire staff","Emerald sword","Crystal orb","Platinum armor",
+  "Ruby pendant","Magic scroll","Obsidian dagger","Star medal","Celestial harp",
+  "Phoenix feather","Dragon scale","Meteor shard","Galactic compass","Crown of the Universe"
+];
+
+// ====== No external images: draw everything with Canvas ======
+// B-2 Spirit (stealth bomber) silhouette
+function drawB2(ctx, x, y, scale = 1) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(scale, scale);
+  // Body shape
+  ctx.beginPath();
+  ctx.moveTo(-120, 0);
+  ctx.lineTo(-70, -28);
+  ctx.lineTo(-18, -40);
+  ctx.lineTo(0, -48); // nose
+  ctx.lineTo(18, -40);
+  ctx.lineTo(70, -28);
+  ctx.lineTo(120, 0);
+  ctx.lineTo(62, 10);
+  ctx.lineTo(36, 6);
+  ctx.lineTo(16, 10);
+  ctx.lineTo(0, 14); // trailing notch
+  ctx.lineTo(-16, 10);
+  ctx.lineTo(-36, 6);
+  ctx.lineTo(-62, 10);
+  ctx.closePath();
+  // stealthy gradient fill
+  const g = ctx.createLinearGradient(-120, -60, 140, 40);
+  g.addColorStop(0, '#0d1117');
+  g.addColorStop(1, '#2b2f36');
+  ctx.fillStyle = g;
+  ctx.fill();
+  ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.stroke();
+  // Cockpit highlight
+  ctx.beginPath();
+  ctx.ellipse(0, -30, 20, 8, 0, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(120,160,220,0.35)';
+  ctx.fill();
+  // Gun muzzle glow
+  ctx.beginPath(); ctx.arc(0, -50, 4, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(255,255,120,0.8)';
+  ctx.fill();
+  ctx.restore();
+}
+
+// Enemy red fighter jet (distinct from B-2)
+function drawRedJet(ctx, x, y, size = 70, angle = 0) {
+  ctx.save();
+  ctx.translate(x + size/2, y + size/2);
+  ctx.rotate(angle);
+  ctx.scale(size/90, size/90);
+  // fuselage arrow
+  ctx.beginPath();
+  ctx.moveTo(0,-45);
+  ctx.lineTo(14,-10);
+  ctx.lineTo(8,-8);
+  ctx.lineTo(30,10);
+  ctx.lineTo(-30,10);
+  ctx.lineTo(-8,-8);
+  ctx.lineTo(-14,-10);
+  ctx.closePath();
+  const r = ctx.createLinearGradient(-30,-45,30,20);
+  r.addColorStop(0,'#ff3b3b');
+  r.addColorStop(1,'#a80000');
+  ctx.fillStyle = r; ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.25)'; ctx.lineWidth=2; ctx.stroke();
+  // wings
+  ctx.beginPath();
+  ctx.moveTo(-40, 0); ctx.lineTo(-8, -6); ctx.lineTo(-8, 6); ctx.closePath();
+  ctx.moveTo(40, 0); ctx.lineTo(8, -6); ctx.lineTo(8, 6); ctx.closePath();
+  ctx.fillStyle = '#9c0000'; ctx.fill();
+  // canopy
+  ctx.beginPath(); ctx.ellipse(0,-18,7,6,0,0,Math.PI*2);
+  ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.fill();
+  ctx.restore();
+}
+
+// Simple starfield (varies per level)
+let stars = [];
+function buildStarfield(w,h,level){
+  stars = [];
+  const layers = 3;
+  const hue = (level*23) % 360;
+  for(let l=0;l<layers;l++){
+    const count = Math.floor((60 + level*3) * (l+1));
+    for(let i=0;i<count;i++){
+      stars.push({
+        x: Math.random()*w,
+        y: Math.random()*h,
+        s: Math.random()*(1.2+l*0.6)+0.3,
+        v: 0.2 + l*0.8,
+        c: `hsl(${hue}, ${20+ l*10}%, ${70 + l*8}%)`
+      });
+    }
+  }
+}
+
+// Particle explosion
+function spawnExplosion(particles, x, y, base=30) {
+  for(let i=0;i<base;i++){
+    const a = Math.random()*Math.PI*2;
+    const sp = 1+Math.random()*3;
+    particles.push({x,y, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp, life: 1});
+  }
+}
+
+// WebAudio bleeps (no external sound files)
+let audioCtx;
+function playTone(freq=440, type='square', dur=0.08, vol=0.2){
+  try {
+    if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.value = vol;
+    o.connect(g).connect(audioCtx.destination);
+    o.start();
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+    o.stop(audioCtx.currentTime + dur + 0.02);
+  } catch(e){}
+}
+function sfxShoot(){ playTone(880,'square',0.06,0.25); }
+function sfxExplode(){ playTone(160,'sawtooth',0.18,0.25); playTone(90,'triangle',0.22,0.18); }
+function sfxGameOver(){ playTone(220,'sine',0.25,0.3); setTimeout(()=>playTone(130,'sine',0.35,0.22),120); }
+
+// ====== UI / Progress ======
+function saveProgress(){
+  localStorage.setItem('gems', gems);
+  localStorage.setItem('bulletPower', bulletPower);
+  localStorage.setItem('unlockedLevels', JSON.stringify(unlockedLevels));
+}
+function loadProgress(){
+  gems = parseInt(localStorage.getItem('gems')) || 0;
+  bulletPower = parseInt(localStorage.getItem('bulletPower')) || 1;
+  unlockedLevels = JSON.parse(localStorage.getItem('unlockedLevels')) || [1];
+}
+
+function showMenu(){
+  loadProgress();
+  document.getElementById('menu').style.display = 'flex';
+  document.getElementById('game').style.display = 'none';
+  document.getElementById('gameOver').style.display = 'none';
+  document.getElementById('levelComplete').style.display = 'none';
+  document.getElementById('upgradeMenu').style.display = 'none';
+  renderLevels();
+}
+
+function renderLevels(){
+  const container = document.getElementById('levels');
+  container.innerHTML = '';
+  for(let i=1;i<=totalLevels;i++){
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.textContent = 'Level ' + i;
+    if(!unlockedLevels.includes(i)){
+      btn.disabled = true;
+      btn.title = 'Level Locked';
+      btn.addEventListener('click', ()=> alert('Level Locked'));
+    } else {
+      btn.onclick = ()=> startLevel(i);
+    }
+    container.appendChild(btn);
+  }
+}
+
+// ====== Game Loop ======
+let canvas, ctx, panShield;
+function startLevel(level){
+  currentLevel = level; health = 100; enemiesDestroyed = 0; score = 0; coins = 0;
+  requiredKills = currentLevel * 15; // << ADDED: required kills per level (level * 15)
+  document.getElementById('health').style.width = health + '%';
+  document.getElementById('scoreDisplay').textContent = 'Score: ' + score;
+  document.getElementById('coinGemDisplay').textContent = `Coins: ${coins} | Gems: ${gems}`;
+  document.getElementById('menu').style.display = 'none';
+  document.getElementById('game').style.display = 'block';
+  runGame();
+}
+
+function runGame(){
+  gameRunning = true;
+  canvas = document.getElementById('gameCanvas');
+  ctx = canvas.getContext('2d');
+  sizeCanvas();
+  window.addEventListener('resize', sizeCanvas);
+
+  let enemies = [];
+  let bullets = [];
+  let particles = [];
+  let t = 0;
+  playerX = canvas.width * 0.5;
+  playerY = canvas.height * 0.8;
+  buildStarfield(canvas.width, canvas.height, currentLevel);
+
+  function sizeCanvas(){
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  }
+
+  function spawnEnemy(){
+    const x = Math.random() * (canvas.width - 70);
+    const base = 70 + Math.random()*25;
+    enemies.push({x, y: -base, size: base, angle: 0, disappearing:false, opacity:1});
+  }
+  const spawnInterval = setInterval(spawnEnemy, Math.max(900 - currentLevel*20, 300));
+
+  // input: drag anywhere to move; tap/click to fire
+  panShield = document.getElementById('panShield');
+  let dragging = false;
+  function setXY(clientX, clientY){
+    const rect = canvas.getBoundingClientRect();
+    playerX = Math.min(Math.max(clientX - rect.left, 20), canvas.width-20);
+    playerY = Math.min(Math.max(clientY - rect.top, 20), canvas.height-20);
+  }
+  panShield.onpointerdown = (e)=>{ dragging = true; panShield.setPointerCapture(e.pointerId); setXY(e.clientX, e.clientY); shoot(); };
+  panShield.onpointermove = (e)=>{ if(dragging) setXY(e.clientX, e.clientY); };
+  panShield.onpointerup = (e)=>{ dragging = false; };
+  panShield.addEventListener('touchstart', (e)=>{ if(e.touches[0]) { setXY(e.touches[0].clientX, e.touches[0].clientY); shoot(); }} , {passive:true});
+  panShield.addEventListener('touchmove', (e)=>{ if(e.touches[0]) setXY(e.touches[0].clientX, e.touches[0].clientY); }, {passive:true});
+  window.addEventListener('click', shoot);
+
+  function shoot(){
+    const w = 16 + bulletPower*8; // bigger with upgrades
+    const h = 36 + bulletPower*10;
+    bullets.push({x: playerX - w/2, y: playerY - 58, w, h, vy: -10 - bulletPower*1.2});
+    sfxShoot();
+  }
+
+  function update(){
+    if(!gameRunning) return; t += 1/60;
+    // Background: gradient + stars
+    const hue = (currentLevel*23) % 360;
+    const grad = ctx.createRadialGradient(canvas.width*0.5, canvas.height*0.3, 10, canvas.width*0.5, canvas.height*0.6, Math.max(canvas.width, canvas.height));
+    grad.addColorStop(0, `hsla(${(hue+40)%360}, 70%, 12%, 1)`);
+    grad.addColorStop(1, `hsla(${(hue+200)%360}, 70%, 5%, 1)`);
+    ctx.fillStyle = grad; ctx.fillRect(0,0,canvas.width,canvas.height);
+    // Stars
+    for(const s of stars){ s.y += s.v; if(s.y>canvas.height) s.y = -2; ctx.fillStyle = s.c; ctx.fillRect(s.x, s.y, s.s, s.s); }
+
+    // Defender (B-2)
+    drawB2(ctx, playerX, playerY, 0.8 + bulletPower*0.03);
+
+    // Bullets
+    ctx.fillStyle = 'rgba(255,255,120,0.95)';
+    for(let i=bullets.length-1;i>=0;i--){
+      const b = bullets[i];
+      b.y += b.vy;
+      // glowing bolt
+      ctx.shadowColor = 'rgba(255,255,160,0.8)'; ctx.shadowBlur = 18;
+      ctx.fillRect(b.x, b.y, b.w, b.h);
+      ctx.shadowBlur = 0;
+      if(b.y + b.h < 0) bullets.splice(i,1);
+    }
+
+    // Enemies
+    for(let i=enemies.length-1;i>=0;i--){
+      const en = enemies[i];
+      if(!en.disappearing){
+        en.y += 2 + Math.sin(t + en.x*0.01);
+        en.angle = Math.sin((t*2) + en.x*0.02)*0.25;
+        drawRedJet(ctx, en.x, en.y, en.size, en.angle);
+        // reached ground -> damage
+        if(en.y > canvas.height - 80){
+          enemies.splice(i,1);
+          health = Math.max(0, health - 20);
+          document.getElementById('health').style.width = health + '%';
+          if(health <= 35) document.getElementById('health').style.background = 'linear-gradient(90deg,#ff5858,#c40000)';
+          if(health <= 0) return gameOver();
+        }
+      } else {
+        en.opacity -= 0.06;
+        if(en.opacity <= 0) enemies.splice(i,1);
+      }
+    }
+
+    // Collisions (bullet vs enemy)
+    for(let i=enemies.length-1;i>=0;i--){
+      const en = enemies[i]; if(en.disappearing) continue;
+      for(let j=bullets.length-1;j>=0;j--){
+        const b = bullets[j];
+        if(b.x < en.x + en.size && b.x + b.w > en.x && b.y < en.y + en.size && b.y + b.h > en.y){
+          // hit!
+          enemies[i].disappearing = true; enemies[i].opacity = 1;
+          // spawn explosion particles roughly at enemy center
+          spawnExplosion(particles, en.x + en.size/2, en.y + en.size/2, 24 + Math.floor(6*bulletPower));
+          sfxExplode();
+          bullets.splice(j,1);
+          enemiesDestroyed++; score += 10; coins += 1; if(coins % 10 === 0) gems += 1;
+          document.getElementById('scoreDisplay').textContent = 'Score: ' + score;
+          document.getElementById('coinGemDisplay').textContent = `Coins: ${coins} | Gems: ${gems}`;
+          // WIN CONDITION: changed to requiredKills
+          if(enemiesDestroyed >= requiredKills) return levelComplete();
+          break;
+        }
+      }
+    }
+
+    // Explosion particles
+    for(let i=particles.length-1;i>=0;i--){
+      const p = particles[i];
+      p.x += p.vx; p.y += p.vy; p.life -= 0.02;
+      ctx.globalAlpha = Math.max(0,p.life);
+      const rg = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 8);
+      rg.addColorStop(0,'#fff5c0'); rg.addColorStop(1,'#ff6a00');
+      ctx.fillStyle = rg; ctx.beginPath(); ctx.arc(p.x,p.y, 6, 0, Math.PI*2); ctx.fill();
+      ctx.globalAlpha = 1;
+      if(p.life <= 0) particles.splice(i,1);
+    }
+
+    requestAnimationFrame(update);
+  }
+  update();
+}
+
+function levelComplete(){
+  gameRunning = false;
+  document.getElementById('game').style.display = 'none';
+  document.getElementById('levelComplete').style.display = 'flex';
+  document.getElementById('rewardText').textContent = `Reward: ${rewards[currentLevel-1]} | Score: ${score} | Coins: ${coins} | Gems: ${gems}`;
+
+  // Visual rewards for levels 1-3 (added exactly as requested)
+  let visual = "";
+  if(currentLevel === 1){
+    visual = '<div class="rewardIcon">💰 Bag of Gold</div>';
+  } else if(currentLevel === 2){
+    visual = '<div class="rewardIcon">🥈 Bag of Silver</div>';
+  } else if(currentLevel === 3){
+    // golden crown + simple 3D celebration animation
+    visual = '<div class="rewardIcon">👑 Golden Crown</div><div class="celebration3d">✨🎆🎇</div>';
+  } else {
+    visual = '';
+  }
+  document.getElementById('rewardVisual').innerHTML = visual;
+
+  if(!unlockedLevels.includes(currentLevel+1) && currentLevel < totalLevels){ unlockedLevels.push(currentLevel+1); }
+  saveProgress();
+}
+
+function openUpgradeMenu(){
+  document.getElementById('levelComplete').style.display = 'none';
+  document.getElementById('upgradeMenu').style.display = 'flex';
+  document.getElementById('gemCount').textContent = `Gems: ${gems}`;
+}
+function backToLevelComplete(){
+  document.getElementById('upgradeMenu').style.display = 'none';
+  document.getElementById('levelComplete').style.display = 'flex';
+}
+function upgradeGun(){
+  if(gems >= 5){ gems -= 5; bulletPower++; document.getElementById('gemCount').textContent = `Gems: ${gems}`; saveProgress(); alert('Gun upgraded! Stronger bullets.'); }
+  else alert('Not enough gems!');
+}
+function upgradeJet(){
+  if(gems >= 5){ gems -= 5; /* Drag speed not needed; give cosmetic bonus */ alert('Jet upgraded! Stealth coating improved ✨'); document.getElementById('gemCount').textContent = `Gems: ${gems}`; saveProgress(); }
+  else alert('Not enough gems!');
+}
+
+function gameOver(){
+  gameRunning = false; sfxGameOver();
+  document.getElementById('game').style.display = 'none';
+  document.getElementById('gameOver').style.display = 'flex';
+}
+function retryLevel(){ document.getElementById('gameOver').style.display = 'none'; startLevel(currentLevel); }
+function backToMenu(){ showMenu(); }
+function nextLevel(){ showMenu(); }
+
+showMenu();
+</script>
+</body>
+</html>
+

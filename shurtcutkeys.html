@@ -1,0 +1,373 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Learning Platform</title>
+  <!-- Google Fonts for an engaging anime-inspired style -->
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Montserrat:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    /* Animated gradient background */
+    body {
+      font-family: 'Montserrat', sans-serif;
+      color: #333;
+      overflow-x: hidden;
+      animation: gradientBG 10s ease infinite;
+      background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fad0c4, #fbc2eb);
+      background-size: 400% 400%;
+      padding: 20px;
+    }
+    
+    @keyframes gradientBG {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    header h1 {
+      font-family: 'Bangers', cursive;
+      font-size: 3rem;
+      color: #fff;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+    }
+    
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .passage {
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid #ffc0cb;
+      margin-bottom: 30px;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .passage:hover {
+      transform: scale(1.02);
+      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .passage h2 {
+      margin-bottom: 15px;
+      font-family: 'Bangers', cursive;
+      color: #ff1493;
+      font-size: 2rem;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    }
+    
+    .content h3 {
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+      color: #444;
+    }
+    
+    .content ol {
+      margin-left: 20px;
+      list-style-type: decimal;
+    }
+    
+    .content li {
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+    
+    .take-test {
+      display: block;
+      width: 150px;
+      margin: 20px auto 0;
+      padding: 10px;
+      background-color: #ff1493;
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .take-test:hover {
+      background-color: #c71585;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Interactive Learning Platform</h1>
+  </header>
+  <main>
+    <!-- Passage 1 -->
+    <section class="passage" id="passage1">
+      <h2>Passage 1: Basic Shortcut Keys</h2>
+      <div class="content">
+        <h3>Theory (50 Shortcut Keys with Explanations):</h3>
+        <ol>
+          <li>Win + D – Minimizes all windows to show the desktop.</li>
+          <li>Ctrl + Shift + N – Creates a new folder in File Explorer.</li>
+          <li>Ctrl + S – Saves the current document in Word or Excel.</li>
+          <li>Ctrl + C – Copies the selected text or item.</li>
+          <li>Ctrl + V – Pastes the copied or cut item.</li>
+          <li>Ctrl + X – Cuts the selected text or item.</li>
+          <li>Ctrl + Z – Undoes the last action.</li>
+          <li>Ctrl + Y – Redoes the previously undone action.</li>
+          <li>Ctrl + B – Applies bold formatting in Word.</li>
+          <li>Ctrl + I – Applies italic formatting in Word.</li>
+          <li>Ctrl + U – Underlines selected text in Word.</li>
+          <li>Win + E – Opens File Explorer.</li>
+          <li>Win + L – Locks your Windows computer.</li>
+          <li>Alt + Tab – Switches between open applications.</li>
+          <li>Win + R – Opens the Run dialog box.</li>
+          <li>Win + I – Opens Windows Settings.</li>
+          <li>Win + A – Opens the Action Center.</li>
+          <li>Win + S – Opens the Windows Search bar.</li>
+          <li>Win + X – Opens the Quick Link menu.</li>
+          <li>Win + M – Minimizes all open windows.</li>
+          <li>Win + Shift + M – Restores minimized windows.</li>
+          <li>Ctrl + A – Selects all content in a document.</li>
+          <li>Ctrl + F – Opens the Find dialog.</li>
+          <li>Ctrl + H – Opens the Replace dialog in Word.</li>
+          <li>Ctrl + P – Opens the Print dialog.</li>
+          <li>Ctrl + N – Creates a new document in Word.</li>
+          <li>Ctrl + O – Opens an existing document.</li>
+          <li>Ctrl + K – Inserts a hyperlink in Word.</li>
+          <li>Ctrl + D – Opens the Font dialog in Word.</li>
+          <li>Ctrl + E – Centers text in a document.</li>
+          <li>Ctrl + L – Left-aligns text.</li>
+          <li>Ctrl + R – Right-aligns text.</li>
+          <li>Ctrl + J – Justifies text in Word.</li>
+          <li>Ctrl + M – Increases the paragraph indent in Word.</li>
+          <li>Ctrl + Shift + M – Decreases the paragraph indent.</li>
+          <li>F7 – Runs the Spelling and Grammar check in Word.</li>
+          <li>Shift + F7 – Opens the Thesaurus in Word.</li>
+          <li>Ctrl + Shift + C – Copies the formatting (Format Painter) in Word.</li>
+          <li>Ctrl + Shift + V – Pastes the copied formatting in Word.</li>
+          <li>Ctrl + Enter – Inserts a page break in Word.</li>
+          <li>F2 – Edits the active cell in Excel.</li>
+          <li>F11 – Creates a chart based on selected data in Excel.</li>
+          <li>Ctrl + ` – Toggles the display of formulas in Excel.</li>
+          <li>Ctrl + ; – Inserts the current date in Excel.</li>
+          <li>Ctrl + Shift + : – Inserts the current time in Excel.</li>
+          <li>Alt + F4 – Closes the current window or application.</li>
+          <li>Win + Tab – Opens Task View to show all desktops.</li>
+          <li>Win + Ctrl + D – Creates a new virtual desktop.</li>
+          <li>Win + Ctrl + F4 – Closes the current virtual desktop.</li>
+          <li>Win + Plus (+) – Opens the Magnifier tool and zooms in.</li>
+        </ol>
+      </div>
+      <button class="take-test" onclick="goToTest()">Take Test</button>
+    </section>
+
+    <!-- Passage 2 -->
+    <section class="passage" id="passage2">
+      <h2>Passage 2: Intermediate Shortcut Keys</h2>
+      <div class="content">
+        <h3>Theory (50 Shortcut Keys with Explanations):</h3>
+        <ol>
+          <li>Win + D – Minimizes all windows to show the desktop.</li>
+          <li>Ctrl + Shift + N – Creates a new folder in File Explorer.</li>
+          <li>Ctrl + S – Saves your document in Word or Excel.</li>
+          <li>Ctrl + C – Copies the selected content.</li>
+          <li>Ctrl + V – Pastes the copied content.</li>
+          <li>Ctrl + X – Cuts the selected content.</li>
+          <li>Ctrl + Z – Undoes the last action.</li>
+          <li>Ctrl + Y – Redoes the last undone action.</li>
+          <li>Ctrl + B – Bolds text in Word.</li>
+          <li>Ctrl + I – Italicizes text in Word.</li>
+          <li>Ctrl + U – Underlines text in Word.</li>
+          <li>Win + E – Opens File Explorer.</li>
+          <li>Win + L – Locks your computer.</li>
+          <li>Alt + Tab – Switches between open applications.</li>
+          <li>Win + R – Opens the Run dialog box.</li>
+          <li>Win + I – Opens Windows Settings.</li>
+          <li>Win + A – Opens the Action Center.</li>
+          <li>Win + S – Opens the Windows Search bar.</li>
+          <li>Win + X – Opens the Quick Link menu.</li>
+          <li>Win + M – Minimizes all windows.</li>
+          <li>Win + Shift + M – Restores minimized windows.</li>
+          <li>Ctrl + A – Selects all content in a document.</li>
+          <li>Ctrl + F – Opens the Find dialog.</li>
+          <li>Ctrl + H – Opens the Replace dialog in Word.</li>
+          <li>Ctrl + P – Opens the Print dialog.</li>
+          <li>Ctrl + N – Creates a new document in Word.</li>
+          <li>Ctrl + O – Opens an existing document in Word.</li>
+          <li>Ctrl + K – Inserts a hyperlink in Word.</li>
+          <li>Ctrl + D – Opens the Font dialog in Word.</li>
+          <li>Ctrl + E – Centers text in a document.</li>
+          <li>Ctrl + L – Left-aligns text.</li>
+          <li>Ctrl + R – Right-aligns text.</li>
+          <li>Ctrl + J – Justifies text in Word.</li>
+          <li>Ctrl + M – Increases paragraph indent in Word.</li>
+          <li>Ctrl + Shift + M – Decreases paragraph indent in Word.</li>
+          <li>F7 – Runs the Spell Check in Word.</li>
+          <li>Shift + F7 – Opens the Thesaurus in Word.</li>
+          <li>Ctrl + Shift + C – Copies formatting (Format Painter) in Word.</li>
+          <li>Ctrl + Shift + V – Pastes formatting in Word.</li>
+          <li>Ctrl + Enter – Inserts a page break in Word.</li>
+          <li>F2 – Edits the active cell in Excel.</li>
+          <li>F11 – Creates a chart based on selected data in Excel.</li>
+          <li>Ctrl + ` – Toggles the display of formulas in Excel.</li>
+          <li>Ctrl + ; – Inserts the current date in Excel.</li>
+          <li>Ctrl + Shift + : – Inserts the current time in Excel.</li>
+          <li>Alt + F4 – Closes the current window.</li>
+          <li>Win + Tab – Opens Task View to show all desktops.</li>
+          <li>Win + Ctrl + D – Creates a new virtual desktop.</li>
+          <li>Win + Ctrl + F4 – Closes the current virtual desktop.</li>
+          <li>Win + Plus (+) – Opens the Magnifier and zooms in.</li>
+        </ol>
+      </div>
+      <button class="take-test" onclick="goToTest()">Take Test</button>
+    </section>
+
+    <!-- Passage 3 -->
+    <section class="passage" id="passage3">
+      <h2>Passage 3: Advanced Shortcut Keys</h2>
+      <div class="content">
+        <h3>Theory (50 Shortcut Keys with Explanations):</h3>
+        <ol>
+          <li>Win + D – Minimizes all windows to show the desktop.</li>
+          <li>Ctrl + Shift + N – Creates a new folder.</li>
+          <li>Ctrl + S – Saves your document.</li>
+          <li>Ctrl + C – Copies the selection.</li>
+          <li>Ctrl + V – Pastes the copied item.</li>
+          <li>Ctrl + X – Cuts the selection.</li>
+          <li>Ctrl + Z – Undoes the last action.</li>
+          <li>Ctrl + Y – Redoes the last undone action.</li>
+          <li>Ctrl + B – Bolds text in Word.</li>
+          <li>Ctrl + I – Italicizes text in Word.</li>
+          <li>Ctrl + U – Underlines text in Word.</li>
+          <li>Win + E – Opens File Explorer.</li>
+          <li>Win + L – Locks your computer.</li>
+          <li>Alt + Tab – Switches between open applications.</li>
+          <li>Win + R – Opens the Run dialog box.</li>
+          <li>Win + I – Opens Windows Settings.</li>
+          <li>Win + A – Opens the Action Center.</li>
+          <li>Win + S – Opens the Windows Search bar.</li>
+          <li>Win + X – Opens the Quick Link menu.</li>
+          <li>Win + M – Minimizes all open windows.</li>
+          <li>Win + Shift + M – Restores minimized windows.</li>
+          <li>Ctrl + A – Selects all content in a document.</li>
+          <li>Ctrl + F – Opens the Find dialog.</li>
+          <li>Ctrl + H – Opens the Replace dialog in Word.</li>
+          <li>Ctrl + P – Opens the Print dialog.</li>
+          <li>Ctrl + N – Creates a new document in Word.</li>
+          <li>Ctrl + O – Opens an existing document in Word.</li>
+          <li>Ctrl + K – Inserts a hyperlink in Word.</li>
+          <li>Ctrl + D – Opens the Font dialog in Word.</li>
+          <li>Ctrl + E – Centers text in a document.</li>
+          <li>Ctrl + L – Left-aligns text.</li>
+          <li>Ctrl + R – Right-aligns text.</li>
+          <li>Ctrl + J – Justifies text in Word.</li>
+          <li>Ctrl + M – Increases paragraph indent in Word.</li>
+          <li>Ctrl + Shift + M – Decreases paragraph indent.</li>
+          <li>F7 – Checks spelling and grammar in Word.</li>
+          <li>Shift + F7 – Opens the Thesaurus in Word.</li>
+          <li>Ctrl + Shift + C – Copies formatting (Format Painter) in Word.</li>
+          <li>Ctrl + Shift + V – Pastes the copied formatting in Word.</li>
+          <li>Ctrl + Enter – Inserts a page break in Word.</li>
+          <li>F2 – Edits the active cell in Excel.</li>
+          <li>F11 – Creates a chart based on selected data in Excel.</li>
+          <li>Ctrl + ` – Toggles the display of formulas in Excel.</li>
+          <li>Ctrl + ; – Inserts the current date in Excel.</li>
+          <li>Ctrl + Shift + : – Inserts the current time in Excel.</li>
+          <li>Alt + F4 – Closes the current window.</li>
+          <li>Win + Tab – Opens Task View.</li>
+          <li>Win + Ctrl + D – Creates a new virtual desktop.</li>
+          <li>Win + Ctrl + F4 – Closes the current virtual desktop.</li>
+          <li>Win + Plus (+) – Opens the Magnifier tool and zooms in.</li>
+        </ol>
+      </div>
+      <button class="take-test" onclick="goToTest()">Take Test</button>
+    </section>
+
+    <!-- Passage 4 -->
+    <section class="passage" id="passage4">
+      <h2>Passage 4: Expert Shortcut Keys</h2>
+      <div class="content">
+        <h3>Theory (50 Shortcut Keys with Explanations):</h3>
+        <ol>
+          <li>Win + D – Minimizes all windows to show the desktop.</li>
+          <li>Ctrl + Shift + N – Creates a new folder in File Explorer.</li>
+          <li>Ctrl + S – Saves your document.</li>
+          <li>Ctrl + C – Copies the selected item.</li>
+          <li>Ctrl + V – Pastes the copied item.</li>
+          <li>Ctrl + X – Cuts the selected item.</li>
+          <li>Ctrl + Z – Undoes the last action.</li>
+          <li>Ctrl + Y – Redoes the last undone action.</li>
+          <li>Ctrl + B – Applies bold formatting in Word.</li>
+          <li>Ctrl + I – Italicizes text in Word.</li>
+          <li>Ctrl + U – Underlines text in Word.</li>
+          <li>Win + E – Opens File Explorer.</li>
+          <li>Win + L – Locks your computer.</li>
+          <li>Alt + Tab – Switches between open applications.</li>
+          <li>Win + R – Opens the Run dialog box.</li>
+          <li>Win + I – Opens Windows Settings.</li>
+          <li>Win + A – Opens the Action Center.</li>
+          <li>Win + S – Opens the Windows Search bar.</li>
+          <li>Win + X – Opens the Quick Link menu.</li>
+          <li>Win + M – Minimizes all open windows.</li>
+          <li>Win + Shift + M – Restores minimized windows.</li>
+          <li>Ctrl + A – Selects all content in a document.</li>
+          <li>Ctrl + F – Opens the Find dialog.</li>
+          <li>Ctrl + H – Opens the Replace dialog in Word.</li>
+          <li>Ctrl + P – Opens the Print dialog.</li>
+          <li>Ctrl + N – Creates a new document in Word.</li>
+          <li>Ctrl + O – Opens an existing document.</li>
+          <li>Ctrl + K – Inserts a hyperlink in Word.</li>
+          <li>Ctrl + D – Opens the Font dialog in Word.</li>
+          <li>Ctrl + E – Centers text in a document.</li>
+          <li>Ctrl + L – Left-aligns text.</li>
+          <li>Ctrl + R – Right-aligns text.</li>
+          <li>Ctrl + J – Justifies text in Word.</li>
+          <li>Ctrl + M – Increases paragraph indent in Word.</li>
+          <li>Ctrl + Shift + M – Decreases paragraph indent in Word.</li>
+          <li>F7 – Runs Spell Check in Word.</li>
+          <li>Shift + F7 – Opens the Thesaurus in Word.</li>
+          <li>Ctrl + Shift + C – Copies formatting (Format Painter) in Word.</li>
+          <li>Ctrl + Shift + V – Pastes the copied formatting in Word.</li>
+          <li>Ctrl + Enter – Inserts a page break in Word.</li>
+          <li>F2 – Edits the active cell in Excel.</li>
+          <li>F11 – Creates a chart based on selected data in Excel.</li>
+          <li>Ctrl + ` – Toggles the display of formulas in Excel.</li>
+          <li>Ctrl + ; – Inserts the current date in Excel.</li>
+          <li>Ctrl + Shift + : – Inserts the current time in Excel.</li>
+          <li>Alt + F4 – Closes the current window or application.</li>
+          <li>Win + Tab – Opens Task View.</li>
+          <li>Win + Ctrl + D – Creates a new virtual desktop.</li>
+          <li>Win + Ctrl + F4 – Closes the current virtual desktop.</li>
+          <li>Win + Plus (+) – Opens the Magnifier tool and zooms in.</li>
+        </ol>
+      </div>
+      <button class="take-test" onclick="goToTest()">Take Test</button>
+    </section>
+  </main>
+  <script>
+    // Function to navigate to the test page
+    function goToTest() {
+      window.location.href = "takequiz.html";
+    }
+  </script>
+</body>
+</html>

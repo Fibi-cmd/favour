@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>favour Chronicle — Love & Comedy Stories</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Georgia', serif;
+      background: radial-gradient(circle at top, #0d0d0d, #1a1a1a);
+      color: #f8f8f8;
+      overflow-x: hidden;
+    }
+    header {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 1.5rem;
+      color: gold;
+      text-shadow: 0 0 15px rgba(255,215,0,0.8);
+    }
+    .carousel {
+      perspective: 800px;
+      width: 100%;
+      height: 300px;
+      position: relative;
+      margin: 1rem auto;
+      overflow: hidden;
+      touch-action: pan-y pan-x;
+    }
+    .carousel__ring {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+    }
+    .carousel__card {
+      width: 200px;
+      height: 250px;
+      background-size: cover;
+      background-position: center;
+      border: 2px solid gold;
+      border-radius: 1rem;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+      position: absolute;
+      top: 25px;
+      left: calc(50% - 100px);
+      padding: 0.5rem;
+      text-align: center;
+      cursor: pointer;
+      color: white;
+      text-shadow: 1px 1px 4px black;
+      transition: transform 0.3s ease;
+      font-size: 0.9rem;
+      word-wrap: break-word;
+    }
+    .carousel__card:hover {
+      transform: scale(1.05);
+    }
+    @media (max-width: 768px) {
+      header {
+        font-size: 1.2rem;
+        padding: 1rem;
+      }
+      .carousel {
+        height: 220px;
+      }
+      .carousel__card {
+        width: 80%;
+        height: 180px;
+        top: 20px;
+        left: 10%;
+        font-size: 0.9rem;
+      }
+    }
+    /* Modal styles */
+    #storyModal {
+      display:none;
+      position:fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      background:rgba(0,0,0,0.95);
+      color:white;
+      padding:2rem;
+      overflow-y:auto;
+      z-index:1000;
+      font-size:1.1rem;
+      line-height:1.8;
+      box-sizing: border-box;
+    }
+    #storyModal h2 {
+      color: gold;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    #closeModal {
+      position:absolute;
+      top:10px;
+      right:20px;
+      padding:0.5rem 1rem;
+      font-size:1rem;
+      cursor:pointer;
+      background: gold;
+      color: black;
+      border: none;
+      border-radius: 0.5rem;
+    }
+    #storyContent p {
+      margin-bottom: 1rem;
+      text-align: justify;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <header>The Story of Haruna & favour — U.D.U.S A10 Chronicles</header>
+  <section class="carousel" id="carousel">
+    <div class="carousel__ring" id="ring"></div>
+  </section>
+
+  <div id="storyModal">
+    <button id="closeModal">CLOSE</button>
+    <div id="storyContent"></div>
+  </div>
+
+  <script>
+    const stories = [
+      { title: "The Story of Haruna & favour", link: "harun.html", bg: "aa.jpg" },
+      { title: "Offa Village Chronicles", link: "offa.html", bg: "bb.jpg", content: `
+<h2>Offa Village Chronicles</h2>
+<p>Once upon a time for Offa village, their papa, Uncle Sani, na correct joker. E dey always waka go market to buy yam but e dey enter wahala every time because e dey meet yeye goats and chameleon wey dey move anyhow.</p>
+<p>Mama Sani, wey dey cook koko every morning, go shout for him anytime he forget say soup dey boil. E get small pikin wey dey run enter bush dey chase grasshoppers.</p>
+<p>One day, Uncle Sani waka reach Sokoto junction, meet soldier wey dey carry big bicycle, e run behind am dey shout "Oga, no go tire me oh!" Everybody wey dey see am go laugh tire.</p>
+<p>Later, e go meet Madam Fadila wey dey sell akara; she see am dey dance small dance like say he dey celebrate festival. All villagers come see am, dem laugh until body no fit again.</p>
+<p>That na only beginning because as dem reach night, goat wey dey follow am enter house, chop his chair, and mama go wake up dey shout "Sani, na your leg goat don bite!" This story full chases, wahala, and plenty laughter until everybody dey talk say Offa village no get dull moment.</p>`},
+      { title: "Sokoto Adventure", link: "sokoto.html", bg: "cc.jpg", content: `
+<h2>Sokoto Adventure</h2>
+<p>For Sokoto town, there dey boy wey dem call Bala. Bala mama dey sell fura for market, and Bala dey waka go school every day, but e always dey run enter bush dey play football with goats.</p>
+<p>One day, e decide to waka go main mosque, but as e reach junction, e meet dog wey dey bark anyhow. E start dey dance, people wey dey pass dey stare, dem come dey laugh.</p>
+<p>Later, e waka go uncle shop, dem dey sell tomato and pepper, Bala decide say e go help him mix peppers but end up scatter everywhere. Everybody dey shout, but dem laugh pass wahala.</p>
+<p>Na small pikin from Sokoto wey dey collect laughter everywhere.</p>`},
+      { title: "Random Story 3", link: "random3.html", bg: "dd.jpg", content: `
+<h2>Village Life Drama</h2>
+<p>Village life full of drama. Papa go farm, mama dey sell beans, children dey waka enter bush dey catch crabs. One day, goat waka enter house, chop food. Everybody dey shout but laugh dey follow am.</p>
+<p>This na daily life in our village, e dey funny, e dey long, e get wahala but joy dey everywhere.</p>`},
+      { title: "Random Story 4", link: "random4.html", bg: "ee.jpg", content: `
+<h2>Morning Adventures</h2>
+<p>Na story wey start for early morning. Uncle dey waka go river, he meet old woman wey dey sing, children dey follow her dey dance.</p>
+<p>Then e waka go market meet bicycle wey dey float. Na wahala full the place but everybody dey enjoy the gist.</p>`}
+    ];
+
+    const ring = document.getElementById('ring');
+    const count = stories.length;
+    const angle = 360 / count;
+    let rotateY = 0;
+    let startX = 0;
+    let isDragging = false;
+    let autoRotate = 0.05;
+
+    const storyModal = document.getElementById('storyModal');
+    const storyContent = document.getElementById('storyContent');
+    const closeModal = document.getElementById('closeModal');
+
+    stories.forEach((story, i) => {
+      const card = document.createElement('div');
+      card.className = 'carousel__card';
+      card.style.transform = `rotateY(${i * angle}deg) translateZ(350px)`;
+      card.style.backgroundImage = `url(${story.bg})`;
+      card.innerHTML = `<h3>${story.title}</h3><p>READ</p>`;
+      card.onclick = () => { 
+        if(story.link === 'harun.html') {
+          window.location.href = story.link;
+        } else {
+          storyContent.innerHTML = story.content;
+          storyModal.style.display = 'block';
+        }
+      };
+      ring.appendChild(card);
+    });
+
+    closeModal.onclick = () => { storyModal.style.display = 'none'; };
+
+    const carousel = document.getElementById('carousel');
+
+    function animate() {
+      if (!isDragging) {
+        rotateY += autoRotate;
+        ring.style.transform = `rotateY(${rotateY}deg)`;
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    carousel.addEventListener('touchstart', e => { startX = e.touches[0].clientX; isDragging = true; });
+    carousel.addEventListener('touchmove', e => { const dx = e.touches[0].clientX - startX; rotateY += dx * 0.3; ring.style.transform = `rotateY(${rotateY}deg)`; startX = e.touches[0].clientX; });
+    carousel.addEventListener('touchend', e => { isDragging = false; });
+    carousel.addEventListener('mousedown', e => { startX = e.clientX; isDragging = true; });
+    carousel.addEventListener('mousemove', e => { if (!isDragging) return; const dx = e.clientX - startX; rotateY += dx * 0.3; ring.style.transform = `rotateY(${rotateY}deg)`; startX = e.clientX; });
+    carousel.addEventListener('mouseup', e => { isDragging = false; });
+    carousel.addEventListener('mouseleave', e => { isDragging = false; });
+  </script>
+</body>
+</html>

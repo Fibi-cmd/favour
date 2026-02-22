@@ -1,0 +1,420 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>For You ❤️ — My Sweetheart</title>
+<style>
+  :root{
+    --bg1:#0f1020; /* deep space */
+    --bg2:#1b2845; /* twilight */
+    --accent:#ff5fa2; /* pink */
+    --accent2:#7cf6fd; /* aqua */
+    --glow: 0 0 30px rgba(255,95,162,.7), 0 0 60px rgba(124,246,253,.5);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", Ubuntu, Cantarell, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
+    color:#fff;
+    background: radial-gradient(1200px 600px at 10% 10%, #1a1a38 0%, transparent 60%),
+               radial-gradient(1000px 800px at 90% 10%, #1a1a38 0%, transparent 60%),
+               linear-gradient(180deg,var(--bg1),var(--bg2));
+    overflow-x:hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+  a{color:var(--accent2);}
+
+  /* Floating stars/particles */
+  .stars{position:fixed; inset:0; pointer-events:none; z-index:0}
+  canvas#confetti{position:fixed; inset:0; z-index:10; pointer-events:none}
+
+  /* Header */
+  header{position:relative; z-index:2; padding:22px 14px 0; text-align:center; max-width:480px; margin:0 auto;}
+  h1{font-size:clamp(26px,6vw,46px); margin:0; line-height:1.1; letter-spacing:.5px;}
+  h1 .name{color:var(--accent); text-shadow:var(--glow)}
+  p.subtitle{opacity:.9; margin:.5rem 0 0; font-size:clamp(14px,4vw,18px)}
+
+  /* Hero 3D ring */
+  .ring-wrap{position:relative; perspective:1200px; height:300px; margin:18px auto 0; width:min(95vw,420px)}
+  .ring{position:absolute; inset:0; transform-style:preserve-3d; animation:spin 18s linear infinite}
+  @keyframes spin{to{transform: rotateY(360deg)}}
+  .panel{
+    position:absolute; top:50%; left:50%; transform-style:preserve-3d;
+    width:160px; height:110px; margin:-55px 0 0 -80px;
+    border-radius:16px; background:linear-gradient(135deg, rgba(255,95,162,.15), rgba(124,246,253,.15));
+    border:1px solid rgba(255,255,255,.2); box-shadow:0 10px 40px rgba(0,0,0,.35), inset 0 0 30px rgba(255,255,255,.07);
+    display:flex; align-items:center; justify-content:center; text-align:center; padding:12px; backdrop-filter:blur(6px);
+    font-size:14px;
+  }
+  .panel img{max-width:100%; max-height:100%; border-radius:14px}
+  .panel span{font-weight:700}
+
+  /* Tilt card */
+  .tilt-card{position:relative; z-index:2; width:min(95vw,480px); margin:20px auto; padding:0}
+  .tilt-inner{background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.15); border-radius:22px; padding:18px; box-shadow:0 10px 40px rgba(0,0,0,.35); transform-style:preserve-3d; transition: transform .1s}
+  .tilt-inner h2{margin:4px 0 10px; font-size:clamp(18px,5vw,24px)}
+  .tilt-inner p{margin:.25rem 0 .75rem; opacity:.9; font-size:clamp(14px,4vw,16px)}
+
+  .actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; justify-content:center}
+  .btn{
+    cursor:pointer; border:none; border-radius:14px; padding:12px 16px; font-weight:700;
+    font-size:clamp(14px,4.5vw,16px); letter-spacing:.3px;
+    background:linear-gradient(135deg,var(--accent),#ffa8d6); color:#111; box-shadow:0 8px 30px rgba(255,95,162,.4);
+    flex:1 1 45%; max-width:200px;
+  }
+  .btn.secondary{background:linear-gradient(135deg, var(--accent2), #d2feff);}
+
+  /* Jokes / compliments */
+  .bubble{margin-top:12px; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.15); padding:12px 14px; border-radius:14px; min-height:40px; font-size:clamp(14px,4.2vw,16px);}
+
+  /* Slot machine */
+  .slots{display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:6px; align-items:center; margin-top:14px}
+  .slot{height:42px; overflow:hidden; border-radius:10px; background:#0e1328; border:1px solid rgba(255,255,255,.15);}
+  .reel{display:flex; flex-direction:column}
+  .reel span{display:block; height:42px; line-height:42px; text-align:center; font-weight:800; font-size:14px;}
+
+  /* Envelope surprise */
+  .envelope-wrap{margin:24px auto 8px; display:flex; justify-content:center}
+  .envelope{position:relative; width:200px; height:140px; background:#ffeff6; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,.35)}
+  .flap{position:absolute; inset:0; background:linear-gradient(180deg,#ffd2ea,#ffeff6); clip-path:polygon(0 0,100% 0,50% 60%); transform-origin:top; transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+  .letter{position:absolute; left:10px; right:10px; bottom:8px; height:100px; background:#fff; border-radius:8px; box-shadow:0 6px 20px rgba(0,0,0,.15); display:flex; align-items:center; justify-content:center; color:#222; padding:8px; transform:translateY(30px); transition: transform .8s; font-size:14px;}
+  .envelope.open .flap{transform:rotateX(180deg)}
+  .envelope.open .letter{transform:translateY(-25px)}
+  .letter strong{color:#e91e63}
+
+  /* Floating hearts */
+  .hearts{position:fixed; left:0; right:0; bottom:0; pointer-events:none; height:0}
+  .heart{position:fixed; bottom:-20px; width:18px; height:18px; transform:rotate(45deg); background:var(--accent); box-shadow: -12px 0 0 var(--accent), 0 -12px 0 var(--accent); animation:float 6s linear infinite}
+  @keyframes float{0%{transform:translateY(0) rotate(45deg)} 100%{transform:translateY(-120vh) rotate(45deg)}}
+
+  footer{opacity:.65; text-align:center; padding:20px 10px 40px; font-size:12px}
+
+  /* Responsive tweaks */
+  @media (max-width:420px){
+    .ring-wrap{height:240px}
+    .panel{width:140px; height:90px; margin:-45px 0 0 -70px; font-size:12px;}
+    .btn{flex:1 1 100%; max-width:none;}
+    .slots{grid-template-columns:1fr 1fr 1fr 1fr}
+  }
+</style>
+</head>
+<body>
+<canvas class="stars" id="bg"></canvas>
+<canvas id="confetti"></canvas>
+
+<header>
+  <h1>Hi <span class="name" id="gfName">Beautiful</span> ✨</h1>
+  <p class="subtitle">🌸 For My One and Only, favour 🌸<br>You deserve a whole galaxy of smiles<br/></p>
+</header>
+
+<!-- 3D ring with panels -->
+<section class="ring-wrap" aria-label="3D ring of sweetness">
+  <div class="ring" id="ring"></div>
+</section>
+
+<section class="tilt-card">
+  <div class="tilt-inner" id="tilt">
+    <h2>Tap the magic buttons</h2>
+    <p>Every click = a little burst of joy. Promise.</p>
+
+    <div class="actions">
+      <button class="btn" id="laugh">my love 😂</button>
+      <button class="btn secondary" id="confettiBtn">Confetti blast 🎉</button>
+      <button class="btn" id="spinBtn">Spin reasons I adore you 🎰</button>
+      <button class="btn secondary" id="openEnvelope">Open a tiny secret 💌</button>
+    </div>
+
+    <div class="bubble" id="output" aria-live="polite"></div>
+
+    <div class="slots">
+      <div class="slot"><div class="reel" id="reel1"></div></div>
+      <div class="slot"><div class="reel" id="reel2"></div></div>
+      <div class="slot"><div class="reel" id="reel3"></div></div>
+      <button class="btn" id="spinAgain" title="Spin again">▶</button>
+    </div>
+
+    <div class="envelope-wrap">
+      <div class="envelope" id="envelope" role="button" aria-label="Open love letter">
+        <div class="flap"></div>
+        <div class="letter">
+          <div>
+            <div style="font-weight:800; font-size:18px; margin-bottom:6px">A Note</div>
+            <div>Even on bad days, <strong>you</strong> are my best part. Always.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="hearts" aria-hidden="true" id="hearts"></div>
+
+<footer>
+  <div> Made with Full LOVE.</div>
+  <div style="margin-top:6px; font-size:12px;">P.S. Type the Konami code on a keyboard for a surprise: ↑ ↑ ↓ ↓ ← → ← → B A</div>
+</footer>
+
+<script>
+  /* ==========================
+     ✨ Personalize quickly
+     Change the name & panels
+     ========================== */
+  const GIRLFRIEND_NAME = "Beautiful"; // ← put her name here
+  const ringItems = [
+    {type:"text", content:"Your smile = solar power"},
+    {type:"text", content:"I owe you 1,000 hugs"},
+    {type:"text", content:"You + Me = 😍"},
+    {type:"text", content:"Certified Cutie (100%)"},
+    {type:"text", content:"Warning: irresistible"},
+    {type:"text", content:"Best laugh in the universe"},
+  ];
+
+  /* =============== Background stars =============== */
+  (function stars(){
+    const c = document.getElementById('bg'); const ctx = c.getContext('2d');
+    const DPR = Math.min(2, window.devicePixelRatio||1);
+    function resize(){ c.width = innerWidth*DPR; c.height = innerHeight*DPR; draw(); }
+    // reduced dots for smoother mobile performance
+    const dots = Array.from({length:120},()=>({x:Math.random(), y:Math.random(), r:Math.random()*1.6+0.3, s:Math.random()*0.5+0.1}));
+    function draw(){
+      ctx.clearRect(0,0,c.width,c.height);
+      ctx.fillStyle = 'white';
+      for(const d of dots){
+        const x=d.x*c.width;
+        const y=((d.y+performance.now()/100000*d.s)%1)*c.height;
+        ctx.globalAlpha = 0.6+0.4*Math.sin((d.x+d.y+performance.now()/8000));
+        ctx.beginPath(); ctx.arc(x,y,d.r*DPR,0,Math.PI*2); ctx.fill();
+      }
+      requestAnimationFrame(draw);
+    }
+    addEventListener('resize', resize); resize();
+  })();
+
+  /* =============== Build 3D ring =============== */
+  function buildRing(){
+    const ring = document.getElementById('ring');
+    ring.innerHTML = '';
+    document.getElementById('gfName').textContent = GIRLFRIEND_NAME;
+    const N = ringItems.length;
+    // responsive radius so the panels sit correctly on small screens
+    const radius = Math.max(120, Math.min(380, window.innerWidth * 0.46));
+    ringItems.forEach((item,i)=>{
+      const angle = (i/N)*360;
+      const panel = document.createElement('div'); panel.className='panel';
+      if(item.type==='img'){
+        const img=document.createElement('img'); img.alt='photo'; img.src=item.src; panel.appendChild(img)
+      } else {
+        const span=document.createElement('span'); span.textContent=item.content; panel.appendChild(span)
+      }
+      panel.style.transform = `translateZ(${radius}px) rotateY(${angle}deg)`;
+      ring.appendChild(panel);
+    });
+  }
+  buildRing();
+  let _ringResizeTimer;
+  addEventListener('resize', ()=>{ clearTimeout(_ringResizeTimer); _ringResizeTimer = setTimeout(buildRing, 120); });
+
+  /* =============== Tilt effect =============== */
+  (function tilt(){
+    const el = document.getElementById('tilt');
+    const max=10; let rect;
+    function update(e){
+      // handle pointer events (works for touch/pointer)
+      rect = el.getBoundingClientRect();
+      const clientX = (e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] && e.touches[0].clientX) || rect.left);
+      const clientY = (e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] && e.touches[0].clientY) || rect.top);
+      const cx = rect.left+rect.width/2; const cy = rect.top+rect.height/2;
+      const dx=(clientX-cx)/rect.width; const dy=(clientY-cy)/rect.height;
+      el.style.transform = `rotateX(${(-dy*max).toFixed(2)}deg) rotateY(${(dx*max).toFixed(2)}deg)`;
+    }
+    function reset(){ el.style.transform='rotateX(0) rotateY(0)'}
+    el.addEventListener('pointermove', update); el.addEventListener('pointerleave', reset);
+    // also support touchmove for some older browsers
+    el.addEventListener('touchmove', update, {passive:true});
+    el.addEventListener('touchend', reset);
+  })();
+
+  /* =============== Jokes & compliments =============== */
+  const jokes = [
+    "Are you a bank loan? Because you have my interest (and monthly attention).",
+    "I tried to write you a poem but my heart kept using emojis instead.",
+    "If being cute was a crime, you'd be serving life (I'd still visit).",
+    "Do you have a map? I keep getting lost in your laugh.",
+    "You're like Wi-Fi. When I'm near you, everything just connects.",
+    "Are you a keyboard? Because you're just my type.",
+    "I'm not a photographer but I can picture us napping after jollof.",
+    "Are you Google? Because you have everything I've been searching for (including small wahala).",
+    "If kisses were airtime, I'd never let your SIM card expire.",
+    "You must be a magician—because whenever you smile, everyone else disappears (or maybe I just stop looking).",
+    "If beauty was a subject, you'd have a PhD with distinction.",
+    "You're like my favorite song—I can't get you out of my head (and I don't want to).",
+    "Are you made of sugar? Because you're too sweet, and I think I'm getting addicted.",
+    "I don't need the weather forecast, because your smile already makes my day bright.",
+    "If loving you was homework, I'd happily fail every subject just to repeat it.",
+    "You're like my charger—without you, I feel drained.",
+    "If love was Jollof rice, then you're the one with the extra meat on top.",
+    "Are you a password? Because I can't function without unlocking you.",
+    "You must be a candle—because you light up my whole world (and maybe melt my heart).",
+    "If I were an app, I'd crash every time you looked at me—because I can't handle that much beauty.",
+    "Are you a time traveler? Because my future feels better when I imagine you in it.",
+    "You're like an alert from my bank—unexpected but always making me smile.",
+    "Are you my destiny? Because my heart keeps forwarding me to you.",
+    "If kisses were currency, you'd be the richest woman alive.",
+    "Your smile is like sunrise—it makes the whole day brighter.",
+    "Are you gravity? Because I can't escape falling for you.",
+    "If beauty was music, you'd be the whole orchestra.",
+    "Being with you feels like home—even when I'm far away.",
+    "Are you my diary? Because I can tell you everything.",
+    "When I count blessings, I count you twice.",
+    "I didn't know angels existed on earth until I met you.",
+    "If love is blind, then I don't want my eyes healed.",
+    "Are you a traffic light? Because you stop my heart every time I see you.",
+    "If being fine was a job, you'd be collecting salary every Friday.",
+    "You must be made of pepper, because you spice up my life.",
+    "Are you a mirror? Because I see my happiness in you.",
+    "You're like data subscription—expensive but worth every second.",
+    "If I had a garden, I'd put your name on every flower.",
+    "Are you electricity? Because I can't function without your power.",
+    "You're like bank OTPs—always on my mind when I need you most.",
+    "If beauty was illegal, you'd have a life sentence already.",
+    "Are you my favorite food? Because I can never get enough of you.",
+    "Are you Wi-Fi? Because the closer I get, the stronger I feel.",
+    "If your love was exam questions, I'd never want extra time—I'd keep writing forever.",
+    "Are you a pillow? Because I just want to hold you all night.",
+    "You're like my playlist—every mood feels better with you.",
+    "If you were a dream, I'd never want to wake up.",
+    "Are you sunshine? Because you make even my bad days warm.",
+    "If hugs were fuel, you'd power my whole life.",
+    "Are you rain? Because my heart dances whenever you come around.",
+    "You're like my favorite outfit—I always feel better with you on me.",
+    "Are you chocolate? Because I crave you at the strangest times.",
+    "Are you suya? Because you're hot, spicy, and everyone wants a piece—but you're mine.",
+    "If you were eba, I'd never leave soup for another.",
+    "Are you Jollof rice? Because no matter what, you're the best on the menu.",
+    "You're like Nigerian fuel price—always going higher in value.",
+    "Are you NEPA light? Because you brighten everything instantly.",
+    "If love was akara, you'd be the crunchy one I can't resist.",
+    "Are you puff-puff? Because one taste and I'm addicted.",
+    "You must be shawarma, because my whole life is wrapped around you.",
+    "Are you moi-moi? Because you've captured my heart inside.",
+    "You're like pepper soup—warming me up even on cold days.",
+    "If you were a star, the sun would look dim beside you.",
+    "Are you a charger? Because I feel low without you.",
+    "If I was a phone, you'd be my favorite app.",
+    "You're like 7am alarm—impossible to ignore.",
+    "Are you Wi-Fi password? Because I want to know all your secrets.",
+    "If hugs were apps, you'd be the one I'd keep open forever.",
+    "Are you Google Maps? Because you always lead me to happiness.",
+    "If love was football, you'd be my World Cup trophy.",
+    "Are you an exam? Because you make my heart race every time.",
+    "You're like my shadow—always with me, even when I forget."
+  ];
+
+  const compliments = [
+    ["Your", "perfect", "smile"],
+    ["My", "favorite", "human"],
+    ["Hilariously", "gorgeous", "soul"],
+    ["Soft", "heart", "always"],
+    ["Kind", "smart", "magic"],
+    ["Sunshine", "on", "Mondays"],
+    ["Dance", "moves", "elite"],
+  ];
+
+  function randomPick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  const out = document.getElementById('output');
+  document.getElementById('laugh').addEventListener('click',()=>{
+    const line = randomPick(jokes);
+    out.textContent = line; chirp();
+  });
+
+  /* =============== Slot machine =============== */
+  const reels = [
+    document.getElementById('reel1'),
+    document.getElementById('reel2'),
+    document.getElementById('reel3')
+  ];
+  const words = ["brave","sparkly","legend","angel","genius","sweet","stunning","adorable","funny","kind"];
+  function fillReel(el){ el.innerHTML=''; const items=[...words, ...words]; items.forEach(w=>{ const s=document.createElement('span'); s.textContent=w; el.appendChild(s); }); }
+  reels.forEach(fillReel);
+  function spin(){
+    reels.forEach((el,i)=>{
+      const dist = 48*(10+Math.floor(Math.random()*10));
+      el.style.transition = 'transform 1.2s cubic-bezier(.2,.8,.2,1)';
+      el.style.transform = `translateY(-${dist}px)`;
+      setTimeout(()=>{ el.style.transition='none'; el.style.transform='translateY(0)'; }, 1250 + i*50);
+    });
+    out.textContent = `${randomPick(["Reason #1:","Fun fact:","Breaking news:","Update:"])} You are ${randomPick(words)}, ${randomPick(words)}, and ${randomPick(words)}.`;
+  }
+  document.getElementById('spinBtn').addEventListener('click', spin);
+  document.getElementById('spinAgain').addEventListener('click', spin);
+
+  /* =============== Envelope interaction =============== */
+  const envelope = document.getElementById('envelope');
+  document.getElementById('openEnvelope').addEventListener('click',()=> envelope.classList.toggle('open'));
+  envelope.addEventListener('click',()=> envelope.classList.toggle('open'));
+
+  /* =============== Floating hearts spawner =============== */
+  const hearts = document.getElementById('hearts');
+  function spawnHeart(){
+    const h = document.createElement('div'); h.className='heart';
+    const left = Math.random()*100; const dur = 4+Math.random()*3; const size=10+Math.random()*16;
+    h.style.left = left+'vw'; h.style.animationDuration = dur+'s'; h.style.width=size+'px'; h.style.height=size+'px';
+    hearts.appendChild(h); setTimeout(()=>h.remove(), dur*1000);
+  }
+  setInterval(()=>{ if(document.visibilityState==='visible') spawnHeart(); }, 600);
+
+  /* =============== Confetti =============== */
+  (function confetti(){
+    const canvas = document.getElementById('confetti'); const ctx = canvas.getContext('2d'); const DPR = Math.min(2, window.devicePixelRatio||1);
+    function resize(){ canvas.width=innerWidth*DPR; canvas.height=innerHeight*DPR; }
+    resize(); addEventListener('resize', resize);
+    let parts=[]; let active=false;
+    function burst(){
+      active=true; parts = Array.from({length:140},() => ({
+        x: (Math.random()*innerWidth)*DPR,
+        y: (-20+Math.random()*20)*DPR + innerHeight*DPR/2,
+        vx: (Math.random()-0.5)*6*DPR,
+        vy: (-8-Math.random()*6)*DPR,
+        g: 0.25*DPR + Math.random()*0.15*DPR,
+        r: 2+Math.random()*5,
+        rot: Math.random()*Math.PI,
+        vr: (Math.random()-0.5)*0.2
+      }));
+      draw(); chirp();
+      setTimeout(()=>active=false, 1700);
+    }
+    function draw(){
+      if(!active) return;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      for(const p of parts){
+        p.vy += p.g; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.fillStyle='hsl('+(Math.random()*360|0)+',90%,60%)';
+        ctx.fillRect(-p.r,-p.r,p.r*2,p.r*2); ctx.restore();
+      }
+      parts = parts.filter(p=>p.y<canvas.height+50*DPR);
+      requestAnimationFrame(draw);
+    }
+    document.getElementById('confettiBtn').addEventListener('click', burst);
+  })();
+
+  /* =============== Tiny synth beep =============== */
+  function chirp(){ try{ const ac = new (window.AudioContext||window.webkitAudioContext)(); const o = ac.createOscillator(); const g = ac.createGain(); o.type='triangle'; o.frequency.value=620; o.connect(g); g.connect(ac.destination); g.gain.setValueAtTime(.0001, ac.currentTime); g.gain.exponentialRampToValueAtTime(.3, ac.currentTime+.02); g.gain.exponentialRampToValueAtTime(.0001, ac.currentTime+.18); o.start(); o.stop(ac.currentTime+.2);}catch(e){} }
+
+  /* =============== Konami code =============== */
+  (function konami(){
+    const seq=["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"]; let i=0;
+    addEventListener('keydown', e=>{
+      if(e.key===seq[i]){ i++; if(i===seq.length){ i=0; document.getElementById('confettiBtn').click(); out.textContent = 'Cheat code unlocked! Reward: unlimited kisses.' } }
+      else { i = (e.key===seq[0]?1:0) }
+    });
+  })();
+
+  /* =============== Accessibility niceties =============== */
+  document.querySelectorAll('.btn').forEach(b=> b.setAttribute('aria-pressed','false'));
+</script>
+</body>
+</html>
